@@ -19,11 +19,22 @@
     }
 
     function setup(){
+        local layoutLine = _gui.createLayoutLine();
         mWindow_ = _gui.createWindow();
 
         mTitleLabel_ = mWindow_.createLabel();
+        layoutLine.addCell(mTitleLabel_);
+
+        local windowMoveButton = mWindow_.createButton();
+        windowMoveButton.setText("move");
+        windowMoveButton.attachListenerForEvent(function(widget, action){
+            mObj_.transmitEvent(EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN, this);
+        }, _GUI_ACTION_PRESSED, this);
+        layoutLine.addCell(windowMoveButton);
 
         setTitle(mTitle_);
+
+        layoutLine.layout();
     }
 
     function setTitle(title){

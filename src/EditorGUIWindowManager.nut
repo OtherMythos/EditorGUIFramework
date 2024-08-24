@@ -3,6 +3,8 @@
     mBus_ = null;
     mActiveWindows_ = null
     mCurrentMousePos_ = null
+    mStateContext_ = null;
+    mStateMachine_ = null;
 
     //Z indexes indexed by their internal Z.
     mZIndexes_ = null
@@ -16,6 +18,14 @@
         mBus_ = bus;
         mActiveWindows_ = [];
         mCurrentMousePos_ = Vec2();
+        mStateContext_ = {
+            "mouseButton": array(EditorGUIFramework_WindowManagerStateEvent.MAX, false)
+            "mousePos": Vec2(),
+            "mouseOffset": null,
+
+            "data": null
+        };
+        mStateMachine_ = StateMachine(mStateContext_);
 
         mZIndexes_ = array(MAX_WINDOWS, null);
         mZIndexesOrdered_ = [];
@@ -25,8 +35,23 @@
 
     function notifyBusEvent(event, data){
         if(event == EditorGUIFramework_BusEvent.MOUSE_BUTTON_PRESS){
+            mStateContext_.mouseButton[data] = true;
             reprocessMousePosition_();
+        }else if(event == EditorGUIFramework_BusEvent.MOUSE_BUTTON_RELEASE){
+            mStateContext_.mouseButton[data] = false;
+            //reprocessMousePosition_();
+        }else if(event == EditorGUIFramework_BusEvent.MOUSE_POS_CHANGE){
+            mStateContext_.mousePos = data;
+            setMousePosition(data);
+        }else if(event == EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN){
+            //TODO bit of a hack to get windows dragging properly.
+            mStateContext_.mouseButton[0] = true;
+            attemptWindowDragBegin_(data);
         }
+    }
+
+    function update(){
+        mStateMachine_.updateState();
     }
 
     function registerWindow(window){
@@ -40,7 +65,6 @@
 
     function setMousePosition(pos){
         mCurrentMousePos_ = pos;
-        //reprocessMousePosition_();
     }
 
     //Reorder the Z list so there is a space at the end.
@@ -96,6 +120,10 @@
         }
     }
 
+    function attemptWindowDragBegin_(window){
+        mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG, mStateContext_, window);
+    }
+
     function reprocessWindowZOrder_(){
         mZIndexesOrdered_ = mZIndexes_.filter(function(index, val){
             return val != null;
@@ -124,3 +152,78 @@
     }
 
 }
+
+::EditorGUIFramework.WindowManager.StateMachine <- class{
+
+    mCurrentState_ = null;
+    mCurrentStateDef_ = null;
+    mStateFunctions_ = null;
+    mContextData_ = null;
+
+    mStateDefs_ = array(EditorGUIFramework_WindowManagerState.MAX);
+
+    constructor(contextData){
+        mContextData_ = contextData;
+        mCurrentState_ = EditorGUIFramework_WindowManagerState.NONE;
+        beginState_(mCurrentState_);
+    }
+
+    function beginState_(state){
+        if(mCurrentStateDef_ != null){
+            mCurrentStateDef_.end(mContextData_);
+        }
+        mCurrentStateDef_ = mStateDefs_[state]();
+        mCurrentStateDef_.start(mContextData_);
+        mCurrentState_ = state;
+    }
+
+    function updateState(){
+        if(mCurrentStateDef_ == null) return;
+        local retState = mCurrentStateDef_.update(mContextData_);
+        if(retState != null){
+            beginState_(retState);
+        }
+    }
+
+    function notify(event, ctx, data=null){
+        if(mCurrentStateDef_ == null) return;
+        local retState = mCurrentStateDef_.notify(event, ctx, data);
+        if(retState != null){
+            beginState_(retState);
+        }
+    }
+};
+
+local StateDef = class{
+    function start(ctx){ }
+    function update(ctx){ }
+    function end(ctx){ }
+    function notify(event, ctx){ }
+};
+
+::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.NONE] = class extends StateDef{
+    function update(ctx){
+        //print("none");
+    }
+    function notify(event, ctx, data){
+        if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG){
+            ctx.data = data;
+            ctx.mouseOffset = ctx.data.mWindow_.getPosition() - ctx.mousePos;
+            return EditorGUIFramework_WindowManagerState.WINDOW_DRAG;
+        }
+    }
+}
+
+::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.WINDOW_DRAG] = class extends StateDef{
+    function update(ctx){
+        if(!ctx.mouseButton[EditorGUIFramework_MouseButton.LEFT]){
+            return EditorGUIFramework_WindowManagerState.NONE;
+        }
+
+        ctx.data.setPosition(ctx.mouseOffset + ctx.mousePos);
+    }
+
+    function notify(event, ctx, data){
+
+    }
+};

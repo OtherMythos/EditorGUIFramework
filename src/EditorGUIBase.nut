@@ -23,7 +23,7 @@
     }
 
     function update(){
-
+        mWindowManager_.update();
     }
 
     function notifyBusEvent(event, data){
@@ -31,7 +31,8 @@
     }
 
     function setMousePosition(x, y=null){
-        mWindowManager_.setMousePosition(::EditorGUIFramework.float2_(x, y));
+        local newPos = ::EditorGUIFramework.float2_(x, y);
+        mBus_.transmitEvent(EditorGUIFramework_BusEvent.MOUSE_POS_CHANGE, newPos);
     }
 
     function setMouseButton(button, pressed){

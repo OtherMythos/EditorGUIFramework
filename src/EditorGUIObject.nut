@@ -5,4 +5,8 @@ EditorGUIFramework.Object <- class{
         mId_ = id;
         mBus_ = bus;
     }
+
+    function transmitEvent(event, data){
+        mBus_.transmitEvent(event, data);
+    }
 };
