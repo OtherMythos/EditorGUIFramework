@@ -109,7 +109,8 @@
     function reprocessMousePosition_(){
         local x = mCurrentMousePos_.x;
         local y = mCurrentMousePos_.y;
-        foreach(c,i in mActiveWindows_){
+        for(local c = mActiveWindows_.len()-1; c >= 0; c--){
+            local i = mActiveWindows_[c];
             local p = i.mPos_;
             local s = i.mSize_;
             if(!checkIntersect_(x, y, p.x, p.y, s.x, s.y)) continue;
