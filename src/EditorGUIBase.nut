@@ -9,6 +9,7 @@
     mMouseButtonStates_ = null;
 
     constructor(){
+        ::EditorGUIFramework.mInterface <- ::EditorGUIFramework.Interface();
         mBus_ = ::EditorGUIFramework.Bus();
         mObjectManager_ = ObjectManager(mBus_);
         mWindowManager_ = ::EditorGUIFramework.WindowManager(mBus_);
@@ -28,6 +29,16 @@
 
     function notifyBusEvent(event, data){
 
+    }
+    function notifyBusRequest(request, data){
+        if(EditorGUIFramework_BusRequest.SET_CURSOR){
+            ::EditorGUIFramework.mInterface.setCursor(data);
+            return 0;
+        }
+        else if(EditorGUIFramework_BusRequest.RESET_CURSOR){
+            ::EditorGUIFramework.mInterface.setCursor(_SYSTEM_CURSOR_ARROW);
+            return 0;
+        }
     }
 
     function setMousePosition(x, y=null){

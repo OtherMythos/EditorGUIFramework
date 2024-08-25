@@ -9,4 +9,7 @@ EditorGUIFramework.Object <- class{
     function transmitEvent(event, data){
         mBus_.transmitEvent(event, data);
     }
+    function transmitRequest(event, data){
+        mBus_.transmitRequest(event, data);
+    }
 };

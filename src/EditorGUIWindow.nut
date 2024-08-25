@@ -17,7 +17,7 @@
     mChildWindow_ = null
     mResizeButton_ = null
 
-    RESIZE_BORDER = 4
+    RESIZE_BORDER = 8
 
     constructor(obj, winMan, title){
         mObj_ = obj;
@@ -33,9 +33,17 @@
         mWindow_.setVisualsEnabled(false);
 
         mResizeButton_ = mWindow_.createButton();
-        mResizeButton_.attachListenerForEvent(function(widget, action){
-            mWindowManager_.requestResizeBegin_(this);
-        }, _GUI_ACTION_PRESSED, this);
+        mResizeButton_.attachListener(function(widget, action){
+            if(action == _GUI_ACTION_PRESSED){
+                mWindowManager_.requestResizeBegin_(this);
+            }
+            else if(action == _GUI_ACTION_HIGHLIGHTED){
+                mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_SIZEWE);
+            }
+            else if(action == _GUI_ACTION_CANCEL){
+                mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_ARROW);
+            }
+        }, this);
         mResizeButton_.setVisualsEnabled(false);
 
         mWindowTitlePanel_ = mWindow_.createPanel();

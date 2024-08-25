@@ -7,6 +7,12 @@ enum EditorGUIFramework_BusEvent{
 
     WINDOW_MOVE_DRAG_BEGAN
 };
+enum EditorGUIFramework_BusRequest{
+    NONE,
+
+    SET_CURSOR,
+    RESET_CURSOR,
+};
 
 enum EditorGUIFramework_WindowParam{
     NONE,
