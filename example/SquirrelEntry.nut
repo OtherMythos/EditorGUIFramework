@@ -4,9 +4,13 @@ function start(){
 
     ::guiFrameworkBase <- ::EditorGUIFramework.Base();
 
-    local win = guiFrameworkBase.createWindow("first");
-    win.setPosition(100, 100);
-    win.setSize(100, 100);
+    local width = _window.getWidth();
+    local height = _window.getHeight();
+    for(local i = 0; i < 50; i++){
+        local win = guiFrameworkBase.createWindow("win-" + i.tostring());
+        win.setPosition(_random.randInt(width), _random.randInt(height));
+        win.setSize(100 + _random.randInt(50), 100 + _random.randInt(50));
+    }
 
     local winSecond = guiFrameworkBase.createWindow("second");
     winSecond.setPosition(150, 150);

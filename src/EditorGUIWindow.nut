@@ -9,6 +9,9 @@
 
     mWindow_ = null
     mTitleLabel_ = null
+    mWindowMoveButton_ = null
+    mWindowCloseButton_ = null
+    mWindowTitlePanel_ = null
 
     constructor(obj, winMan, title){
         mObj_ = obj;
@@ -22,27 +25,31 @@
         local layoutLine = _gui.createLayoutLine();
         mWindow_ = _gui.createWindow();
 
+        mWindowTitlePanel_ = mWindow_.createPanel();
+        mWindowTitlePanel_.setPosition(0, 0);
+
         mTitleLabel_ = mWindow_.createLabel();
         layoutLine.addCell(mTitleLabel_);
 
-        local windowCloseButton = mWindow_.createButton();
-        windowCloseButton.setText("close");
-        windowCloseButton.attachListenerForEvent(function(widget, action){
+        mWindowCloseButton_ = mWindow_.createButton();
+        mWindowCloseButton_.setText("X");
+        mWindowCloseButton_.attachListenerForEvent(function(widget, action){
             mWindowManager_.closeWindow_(this);
         }, _GUI_ACTION_PRESSED, this);
-        layoutLine.addCell(windowCloseButton);
+        //layoutLine.addCell(mWindowCloseButton_);
 
-        local windowMoveButton = mWindow_.createButton();
-        windowMoveButton.setText("move");
-        windowMoveButton.attachListenerForEvent(function(widget, action){
+        mWindowMoveButton_ = mWindow_.createButton();
+        //mWindowMoveButton_.setText("move");
+        mWindowMoveButton_.attachListenerForEvent(function(widget, action){
             mObj_.transmitEvent(EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN, this);
         }, _GUI_ACTION_PRESSED, this);
-        layoutLine.addCell(windowMoveButton);
+        mWindowMoveButton_.setVisualsEnabled(false);
+        //layoutLine.addCell(mWindowMoveButton_);
 
         setTitle(mTitle_);
         mWindow_.setClipBorders(0, 0, 0, 0);
 
-        layoutLine.layout();
+        //layoutLine.layout();
     }
 
     function shutdown(){
@@ -53,6 +60,7 @@
         mTitle_ = title;
 
         mTitleLabel_.setText(mTitle_);
+        mTitleLabel_.setTextColour(0.0, 0.0, 0.0, 1.0);
     }
 
     function setPosition(x, y=null){
@@ -73,6 +81,13 @@
             case EditorGUIFramework_WindowParam.SIZE:{
                 mSize_ = val;
                 mWindow_.setSize(val);
+
+                mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
+                mWindowMoveButton_.setPosition(0, 0);
+                mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
+                mWindowCloseButton_.setPosition(val.x - mWindowCloseButton_.getSize().x, 0);
+                mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
+
                 break;
             }
             case EditorGUIFramework_WindowParam.Z_ORDER:{
