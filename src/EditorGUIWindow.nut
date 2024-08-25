@@ -4,7 +4,9 @@
 
     mTitle_ = null
     mPos_ = null
+    mPosWithBorders_ = null
     mSize_ = null
+    mSizeWithBorders_ = null
     mZ_ = null;
 
     mWindow_ = null
@@ -92,13 +94,14 @@
         switch(param){
             case EditorGUIFramework_WindowParam.POSITION:{
                 mPos_ = val;
-                mWindow_.setPosition(val);
+                mPosWithBorders_ = val - RESIZE_BORDER;
+                mWindow_.setPosition(mPosWithBorders_);
                 break;
             }
             case EditorGUIFramework_WindowParam.SIZE:{
-                print(mSize_);
                 mSize_ = val;
-                mWindow_.setSize(mSize_ + RESIZE_BORDER*2);
+                mSizeWithBorders_ = val + RESIZE_BORDER*2;
+                mWindow_.setSize(mSizeWithBorders_);
 
                 mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
                 mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
@@ -111,8 +114,6 @@
                 mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y);
                 mResizeButton_.setPosition(0, 0);
                 mResizeButton_.setSize(mWindow_.getSize());
-
-                print(mWindow_.getSize());
 
                 break;
             }

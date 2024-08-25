@@ -173,8 +173,8 @@
         local y = mCurrentMousePos_.y;
         for(local c = mActiveWindows_.len()-1; c >= 0; c--){
             local i = mActiveWindows_[c];
-            local p = i.mPos_;
-            local s = i.mSize_;
+            local p = i.mPosWithBorders_;
+            local s = i.mSizeWithBorders_;
             if(!checkIntersect_(x, y, p.x, p.y, s.x, s.y)) continue;
             //The mouse is intersecting this window.
             bringWindowToFront(i);
@@ -242,7 +242,7 @@ local StateDef = class{
     function notify(event, ctx, data){
         if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG){
             ctx.data = data;
-            ctx.mouseOffset = ctx.data.mWindow_.getPosition() - ctx.mousePos;
+            ctx.mouseOffset = ctx.data.mPos_ - ctx.mousePos;
             return EditorGUIFramework_WindowManagerState.WINDOW_DRAG;
         }
         else if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_RESIZE){
