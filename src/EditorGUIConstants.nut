@@ -5,7 +5,10 @@ enum EditorGUIFramework_BusEvent{
     MOUSE_BUTTON_RELEASE,
     MOUSE_POS_CHANGE,
 
-    WINDOW_MOVE_DRAG_BEGAN
+    WINDOW_MOVE_DRAG_BEGAN,
+
+    TOOLBAR_OPENED,
+    TOOLBAR_CLOSED,
 };
 enum EditorGUIFramework_BusRequest{
     NONE,
@@ -38,6 +41,8 @@ enum EditorGUIFramework_WindowManagerState{
     WINDOW_DRAG,
     WINDOW_RESIZE,
 
+    TOOLBAR_OPEN,
+
     MAX
 };
 
@@ -51,6 +56,9 @@ enum EditorGUIFramework_WindowManagerStateEvent{
     MOUSE_RIGHT_CHANGE,
 
     WINDOW_CLOSED,
+
+    TOOLBAR_OPENED,
+    TOOLBAR_CLOSED,
 
     MAX
 };

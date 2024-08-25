@@ -49,6 +49,10 @@
             //TODO bit of a hack to get windows dragging properly.
             mStateContext_.mouseButton[0] = true;
             attemptWindowDragBegin_(data);
+        }else if(event == EditorGUIFramework_BusEvent.TOOLBAR_OPENED){
+            mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_OPENED, mStateContext_, null);
+        }else if(event == EditorGUIFramework_BusEvent.TOOLBAR_CLOSED){
+            mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_CLOSED, mStateContext_, null);
         }
     }
 
@@ -198,8 +202,7 @@
 
     constructor(contextData){
         mContextData_ = contextData;
-        mCurrentState_ = EditorGUIFramework_WindowManagerState.NONE;
-        beginState_(mCurrentState_);
+        beginState_(EditorGUIFramework_WindowManagerState.NONE);
     }
 
     function beginState_(state){
@@ -214,7 +217,7 @@
     function updateState(){
         if(mCurrentStateDef_ == null) return;
         local retState = mCurrentStateDef_.update(mContextData_);
-        if(retState != null){
+        if(retState != null && retState != mCurrentState_){
             beginState_(retState);
         }
     }
@@ -250,6 +253,9 @@ local StateDef = class{
             ctx.mouseOffset = ctx.mousePos;
             ctx.windowStartSize = ctx.data.mSize_.copy();
             return EditorGUIFramework_WindowManagerState.WINDOW_RESIZE;
+        }
+        else if(event == EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_OPENED){
+            return EditorGUIFramework_WindowManagerState.TOOLBAR_OPEN;
         }
     }
 }
@@ -288,6 +294,13 @@ local StateDef = class{
                 ctx.data = null;
                 return EditorGUIFramework_WindowManagerState.NONE;
             }
+        }
+    }
+};
+::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.TOOLBAR_OPEN] = class extends StateDef{
+    function notify(event, ctx, data){
+        if(event == EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_CLOSED){
+            return EditorGUIFramework_WindowManagerState.NONE;
         }
     }
 };

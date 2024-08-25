@@ -10,7 +10,7 @@
         mSubscribed_.append(object);
     }
 
-    function transmitEvent(event, data){
+    function transmitEvent(event, data=null){
         foreach(i in mSubscribed_){
             i.notifyBusEvent(event, data);
         }

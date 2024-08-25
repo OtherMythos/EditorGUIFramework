@@ -4,7 +4,7 @@
     mObjectManager_ = null;
     mWindowManager_ = null;
 
-    //ObjectManager = null;
+    mToolbar_ = null;
 
     mMouseButtonStates_ = null;
 
@@ -39,6 +39,11 @@
             ::EditorGUIFramework.mInterface.setCursor(_SYSTEM_CURSOR_ARROW);
             return 0;
         }
+    }
+
+    function setToolbar(toolbar){
+        mToolbar_ = toolbar;
+        mToolbar_.setup_(mBus_);
     }
 
     function setMousePosition(x, y=null){

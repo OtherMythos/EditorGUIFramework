@@ -2,7 +2,26 @@
 function start(){
     _doFile("script://../src/EditorGUIFramework.nut");
 
+    local saveFunction = function(){
+        print("saving");
+    }
+    local undoFunction = function(){
+        print("undo");
+    }
+    local redoFunction = function(){
+        print("redo");
+    }
+
     ::guiFrameworkBase <- ::EditorGUIFramework.Base();
+    ::guiFrameworkBase.setToolbar(::EditorGUIFramework.Toolbar([
+        ["File", [
+            ["Save", saveFunction]
+        ]],
+        [ "Edit", [
+            ["Undo", undoFunction],
+            ["Redo", redoFunction],
+        ]]
+    ]));
 
     local width = _window.getWidth();
     local height = _window.getHeight();

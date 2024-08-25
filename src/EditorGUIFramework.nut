@@ -20,3 +20,4 @@ _doFile("script://EditorGUIBase.nut");
 _doFile("script://EditorGUIBus.nut");
 _doFile("script://EditorGUIWindowManager.nut");
 _doFile("script://EditorGUIWindow.nut");
+_doFile("script://EditorGUIToolbar.nut");
