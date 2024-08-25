@@ -15,6 +15,8 @@
     mChildWindow_ = null
     mResizeButton_ = null
 
+    RESIZE_BORDER = 4
+
     constructor(obj, winMan, title){
         mObj_ = obj;
         mWindowManager_ = winMan;
@@ -26,6 +28,13 @@
     function setup(){
         local layoutLine = _gui.createLayoutLine();
         mWindow_ = _gui.createWindow();
+        mWindow_.setVisualsEnabled(false);
+
+        mResizeButton_ = mWindow_.createButton();
+        mResizeButton_.attachListenerForEvent(function(widget, action){
+            mWindowManager_.requestResizeBegin_(this);
+        }, _GUI_ACTION_PRESSED, this);
+        mResizeButton_.setVisualsEnabled(false);
 
         mWindowTitlePanel_ = mWindow_.createPanel();
         mWindowTitlePanel_.setPosition(0, 0);
@@ -49,12 +58,6 @@
         //layoutLine.addCell(mWindowMoveButton_);
 
         mChildWindow_ = mWindow_.createWindow();
-
-        mResizeButton_ = mWindow_.createButton();
-        mResizeButton_.attachListenerForEvent(function(widget, action){
-            mWindowManager_.requestResizeBegin_(this);
-        }, _GUI_ACTION_PRESSED, this);
-        mResizeButton_.setText("resize");
 
         setTitle(mTitle_);
         mWindow_.setClipBorders(0, 0, 0, 0);
@@ -93,17 +96,23 @@
                 break;
             }
             case EditorGUIFramework_WindowParam.SIZE:{
+                print(mSize_);
                 mSize_ = val;
-                mWindow_.setSize(val);
+                mWindow_.setSize(mSize_ + RESIZE_BORDER*2);
 
                 mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
-                mWindowMoveButton_.setPosition(0, 0);
+                mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                mTitleLabel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                mWindowMoveButton_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
                 mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
-                mWindowCloseButton_.setPosition(val.x - mWindowCloseButton_.getSize().x, 0);
+                mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);
                 mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
-                mChildWindow_.setPosition(0, mTitleLabel_.getSize().y);
-                mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y - mResizeButton_.getSize().y);
-                mResizeButton_.setPosition(val - mResizeButton_.getSize());
+                mChildWindow_.setPosition(RESIZE_BORDER, RESIZE_BORDER + mTitleLabel_.getSize().y);
+                mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y);
+                mResizeButton_.setPosition(0, 0);
+                mResizeButton_.setSize(mWindow_.getSize());
+
+                print(mWindow_.getSize());
 
                 break;
             }
