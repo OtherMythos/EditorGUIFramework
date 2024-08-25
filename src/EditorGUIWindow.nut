@@ -25,6 +25,13 @@
         mTitleLabel_ = mWindow_.createLabel();
         layoutLine.addCell(mTitleLabel_);
 
+        local windowCloseButton = mWindow_.createButton();
+        windowCloseButton.setText("close");
+        windowCloseButton.attachListenerForEvent(function(widget, action){
+            mWindowManager_.closeWindow_(this);
+        }, _GUI_ACTION_PRESSED, this);
+        layoutLine.addCell(windowCloseButton);
+
         local windowMoveButton = mWindow_.createButton();
         windowMoveButton.setText("move");
         windowMoveButton.attachListenerForEvent(function(widget, action){
@@ -33,8 +40,13 @@
         layoutLine.addCell(windowMoveButton);
 
         setTitle(mTitle_);
+        mWindow_.setClipBorders(0, 0, 0, 0);
 
         layoutLine.layout();
+    }
+
+    function shutdown(){
+        _gui.destroy(mWindow_);
     }
 
     function setTitle(title){

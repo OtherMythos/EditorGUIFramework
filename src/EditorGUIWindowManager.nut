@@ -63,8 +63,28 @@
         mActiveWindows_.append(window);
     }
 
+    function deRegisterWindow(window){
+        local idx = mActiveWindows_.find(window);
+        assert(idx != null);
+        mActiveWindows_.remove(idx);
+
+        idx = mZIndexes_.find(window);
+        assert(idx != null);
+        mZIndexes_[idx] = null;
+
+        window.shutdown();
+    }
+
     function setMousePosition(pos){
         mCurrentMousePos_ = pos;
+    }
+
+    function closeWindow_(window){
+        if(mStateMachine_.mCurrentState_ != EditorGUIFramework_WindowManagerStateEvent.NONE){
+            return;
+        }
+        mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_CLOSED, mStateContext_, window);
+        deRegisterWindow(window);
     }
 
     //Reorder the Z list so there is a space at the end.
@@ -224,6 +244,11 @@ local StateDef = class{
     }
 
     function notify(event, ctx, data){
-
+        if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_CLOSED){
+            if(ctx.data == data){
+                ctx.data = null;
+                return EditorGUIFramework_WindowManagerState.NONE;
+            }
+        }
     }
 };

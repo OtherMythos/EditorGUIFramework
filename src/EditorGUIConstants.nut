@@ -42,5 +42,7 @@ enum EditorGUIFramework_WindowManagerStateEvent{
     MOUSE_LEFT_CHANGE,
     MOUSE_RIGHT_CHANGE,
 
+    WINDOW_CLOSED,
+
     MAX
 };
