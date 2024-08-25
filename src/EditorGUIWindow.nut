@@ -12,6 +12,8 @@
     mWindowMoveButton_ = null
     mWindowCloseButton_ = null
     mWindowTitlePanel_ = null
+    mChildWindow_ = null
+    mResizeButton_ = null
 
     constructor(obj, winMan, title){
         mObj_ = obj;
@@ -46,10 +48,22 @@
         mWindowMoveButton_.setVisualsEnabled(false);
         //layoutLine.addCell(mWindowMoveButton_);
 
+        mChildWindow_ = mWindow_.createWindow();
+
+        mResizeButton_ = mWindow_.createButton();
+        mResizeButton_.attachListenerForEvent(function(widget, action){
+            mWindowManager_.requestResizeBegin_(this);
+        }, _GUI_ACTION_PRESSED, this);
+        mResizeButton_.setText("resize");
+
         setTitle(mTitle_);
         mWindow_.setClipBorders(0, 0, 0, 0);
 
         //layoutLine.layout();
+    }
+
+    function getWin(){
+        return mChildWindow_;
     }
 
     function shutdown(){
@@ -87,6 +101,9 @@
                 mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
                 mWindowCloseButton_.setPosition(val.x - mWindowCloseButton_.getSize().x, 0);
                 mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
+                mChildWindow_.setPosition(0, mTitleLabel_.getSize().y);
+                mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y - mResizeButton_.getSize().y);
+                mResizeButton_.setPosition(val - mResizeButton_.getSize());
 
                 break;
             }

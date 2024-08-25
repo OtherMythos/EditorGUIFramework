@@ -30,6 +30,7 @@ enum EditorGUIFramework_WindowManagerState{
     NONE,
 
     WINDOW_DRAG,
+    WINDOW_RESIZE,
 
     MAX
 };
@@ -39,6 +40,7 @@ enum EditorGUIFramework_WindowManagerStateEvent{
     NONE,
 
     WINDOW_DRAG,
+    WINDOW_RESIZE,
     MOUSE_LEFT_CHANGE,
     MOUSE_RIGHT_CHANGE,
 

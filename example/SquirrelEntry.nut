@@ -12,9 +12,24 @@ function start(){
         win.setSize(100 + _random.randInt(50), 100 + _random.randInt(50));
     }
 
-    local winSecond = guiFrameworkBase.createWindow("second");
+    local winSecond = guiFrameworkBase.createWindow("example window");
     winSecond.setPosition(150, 150);
-    winSecond.setSize(100, 100);
+    winSecond.setSize(400, 400);
+
+    {
+        local exampleWin = winSecond.getWin();
+        local layout = _gui.createLayoutLine();
+
+        local exampleText = exampleWin.createLabel();
+        exampleText.setText("Hello from the GUI framework!");
+        layout.addCell(exampleText);
+
+        local exampleButton = exampleWin.createButton();
+        exampleButton.setText("button");
+        layout.addCell(exampleButton);
+
+        layout.layout();
+    }
 }
 
 function update(){

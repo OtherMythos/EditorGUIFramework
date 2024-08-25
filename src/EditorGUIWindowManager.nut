@@ -19,9 +19,11 @@
         mActiveWindows_ = [];
         mCurrentMousePos_ = Vec2();
         mStateContext_ = {
+            "winMan": this,
             "mouseButton": array(EditorGUIFramework_WindowManagerStateEvent.MAX, false)
             "mousePos": Vec2(),
             "mouseOffset": null,
+            "windowStartSize": null,
 
             "data": null
         };
@@ -144,6 +146,11 @@
         mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG, mStateContext_, window);
     }
 
+    function requestResizeBegin_(window){
+        mStateContext_.mouseButton[0] = true;
+        mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_RESIZE, mStateContext_, window);
+    }
+
     function reprocessWindowZOrder_(){
         mZIndexesOrdered_ = mZIndexes_.filter(function(index, val){
             return val != null;
@@ -152,6 +159,13 @@
         foreach(c,i in mZIndexesOrdered_){
             setWindowParam_(i, EditorGUIFramework_WindowParam.Z_ORDER, c);
         }
+    }
+
+    function resizeWindowByDelta(window, startSize, delta){
+        local intendedSize = startSize + delta;
+        if(intendedSize.x <= 100) intendedSize.x = 100;
+        if(intendedSize.y <= 100) intendedSize.y = 100;
+        setWindowParam_(window, EditorGUIFramework_WindowParam.SIZE, intendedSize);
     }
 
     function reprocessMousePosition_(){
@@ -231,6 +245,12 @@ local StateDef = class{
             ctx.mouseOffset = ctx.data.mWindow_.getPosition() - ctx.mousePos;
             return EditorGUIFramework_WindowManagerState.WINDOW_DRAG;
         }
+        else if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_RESIZE){
+            ctx.data = data;
+            ctx.mouseOffset = ctx.mousePos;
+            ctx.windowStartSize = ctx.data.mSize_.copy();
+            return EditorGUIFramework_WindowManagerState.WINDOW_RESIZE;
+        }
     }
 }
 
@@ -241,6 +261,25 @@ local StateDef = class{
         }
 
         ctx.data.setPosition(ctx.mouseOffset + ctx.mousePos);
+    }
+
+    function notify(event, ctx, data){
+        if(event == EditorGUIFramework_WindowManagerStateEvent.WINDOW_CLOSED){
+            if(ctx.data == data){
+                ctx.data = null;
+                return EditorGUIFramework_WindowManagerState.NONE;
+            }
+        }
+    }
+};
+::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.WINDOW_RESIZE] = class extends StateDef{
+    function update(ctx){
+        if(!ctx.mouseButton[EditorGUIFramework_MouseButton.LEFT]){
+            return EditorGUIFramework_WindowManagerState.NONE;
+        }
+
+        local delta = ctx.mousePos - ctx.mouseOffset;
+        ctx.winMan.resizeWindowByDelta(ctx.data, ctx.windowStartSize, delta);
     }
 
     function notify(event, ctx, data){
