@@ -25,6 +25,7 @@
         mTitle_ = title;
 
         setup();
+        setSize(200, 200);
     }
 
     function setup(){
@@ -110,14 +111,15 @@
                 mSize_ = val;
                 mSizeWithBorders_ = val + RESIZE_BORDER*2;
                 mWindow_.setSize(mSizeWithBorders_);
+                mWindowCloseButton_.setText("X");
 
                 mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
                 mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
-                mTitleLabel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                mTitleLabel_.setPosition(RESIZE_BORDER+5, RESIZE_BORDER);
+                mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x*2, mTitleLabel_.getSize().y);
+                mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);
                 mWindowMoveButton_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
                 mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
-                mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);
-                mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
                 mChildWindow_.setPosition(RESIZE_BORDER, RESIZE_BORDER + mTitleLabel_.getSize().y);
                 mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y);
                 mResizeButton_.setPosition(0, 0);
