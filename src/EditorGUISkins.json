@@ -1,0 +1,57 @@
+{
+    "skins" :
+    {
+        "EditorGUIFramework/ButtonSkin" :
+        {
+            "material" : "internal/ButtonSkin",
+            "tex_resolution" : [64, 128],
+            "grid_uv" :
+            {
+                "center2" : [0, 0, 64, 32],
+                "enclosing" : [[0, 0, 64, 32], [4, 4]]
+            },
+            "borders" :
+            {
+                "all" : [5, 0]
+            }
+        },
+        "EditorGUIFramework/PanelSkin" :
+        {
+            "material" : "internal/PanelSkin",
+            "borders" :
+            {
+                "all" : [0, 0]
+            }
+        },
+        "EditorGUIFramework/WindowCloseButtonSkinIdle" :
+        {
+            "copy_from" : "EditorGUIFramework/ButtonSkin",
+            "material" : "EditorGUIFramework_WindowCloseButtonIdle"
+        },
+        "EditorGUIFramework/WindowCloseButtonSkinHighlighted" :
+        {
+            "copy_from" : "EditorGUIFramework/ButtonSkin",
+            "material" : "EditorGUIFramework_WindowCloseButtonSkinHighlighted"
+        },
+        "EditorGUIFramework/ButtonSkinPressed" :
+        {
+            "copy_from" : "EditorGUIFramework/ButtonSkin",
+            "material" : "EditorGUIFramework_WindowCloseButtonSkinPressed"
+        }
+    },
+
+    "skin_packs" :
+    {
+        "EditorGUIFramework/WindowCloseButtonSkinPack" :
+        {
+            "all" : "EditorGUIFramework/WindowCloseButtonSkinIdle",
+            "disabled" : "EditorGUIFramework/WindowCloseButtonSkinHighlighted",
+            "idle" : "EditorGUIFramework/WindowCloseButtonSkinIdle",
+            "highlighted_cursor" : "EditorGUIFramework/WindowCloseButtonSkinHighlighted",
+            "highlighted_button" : "EditorGUIFramework/WindowCloseButtonSkinHighlighted",
+            "highlighted_button_and_cursor" : "EditorGUIFramework/WindowCloseButtonSkinHighlighted",
+            "pressed" : "EditorGUIFramework/ButtonSkinPressed"
+        }
+    }
+}
+

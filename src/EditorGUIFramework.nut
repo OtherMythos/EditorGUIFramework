@@ -14,6 +14,7 @@
 
 _doFile("script://EditorGUIConstants.nut");
 _doFile("script://EditorGUIInterface.nut");
+_doFile("script://EditorGUISettings.nut");
 
 _doFile("script://EditorGUIObject.nut");
 _doFile("script://EditorGUIBase.nut");

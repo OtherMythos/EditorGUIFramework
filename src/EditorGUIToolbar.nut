@@ -102,6 +102,7 @@
         mWindow_ = _gui.createWindow();
         mHoverPanel_ = mWindow_.createPanel();
         mHoverPanel_.setVisible(false);
+        mHoverPanel_.setDatablock("EditorGUIFramework_FrameBg");
         mData_ = data;
 
         local posY = 0;

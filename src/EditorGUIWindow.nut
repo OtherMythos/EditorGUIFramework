@@ -112,9 +112,12 @@
                 mSizeWithBorders_ = val + RESIZE_BORDER*2;
                 mWindow_.setSize(mSizeWithBorders_);
                 mWindowCloseButton_.setText("X");
+                mWindowCloseButton_.setSkinPack("EditorGUIFramework/WindowCloseButtonSkinPack");
 
                 mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
                 mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                mWindowTitlePanel_.setDatablock("EditorGUIFramework_FrameBg");
+
                 mTitleLabel_.setPosition(RESIZE_BORDER+5, RESIZE_BORDER);
                 mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x*2, mTitleLabel_.getSize().y);
                 mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);

@@ -9,6 +9,9 @@
     mMouseButtonStates_ = null;
 
     constructor(){
+        setupColours();
+        _gui.loadSkins("script://EditorGUISkins.json");
+
         ::EditorGUIFramework.mInterface <- ::EditorGUIFramework.Interface();
         mBus_ = ::EditorGUIFramework.Bus();
         mObjectManager_ = ObjectManager(mBus_);
@@ -59,6 +62,14 @@
             , button);
         }
         mMouseButtonStates_[button] = pressed;
+    }
+
+    function setupColours(){
+        foreach(c,i in ::EditorGUIFramework.Settings){
+            local createdBlock = _hlms.unlit.createDatablock("EditorGUIFramework_" + c);
+            createdBlock.setColour(i);
+            createdBlock.setUseColour(true);
+        }
     }
 
     //TODO Each window should have an id
