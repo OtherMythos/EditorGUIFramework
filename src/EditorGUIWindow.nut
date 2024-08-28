@@ -8,6 +8,7 @@
     mSize_ = null
     mSizeWithBorders_ = null
     mZ_ = null;
+    mFocused_ = false;
 
     mWindow_ = null
     mTitleLabel_ = null
@@ -49,12 +50,14 @@
 
         mWindowTitlePanel_ = mWindow_.createPanel();
         mWindowTitlePanel_.setPosition(0, 0);
+        mWindowTitlePanel_.setDatablock("EditorGUIFramework_FrameBg");
 
         mTitleLabel_ = mWindow_.createLabel();
         layoutLine.addCell(mTitleLabel_);
 
         mWindowCloseButton_ = mWindow_.createButton();
         mWindowCloseButton_.setText("X");
+        mWindowCloseButton_.setSkinPack("EditorGUIFramework/WindowCloseButtonSkinPack");
         mWindowCloseButton_.attachListenerForEvent(function(widget, action){
             mWindowManager_.closeWindow_(this);
         }, _GUI_ACTION_PRESSED, this);
@@ -99,6 +102,10 @@
         mWindowManager_.setWindowParam_(this, EditorGUIFramework_WindowParam.SIZE, ::EditorGUIFramework.float2_(x, y));
     }
 
+    function focus(){
+        mWindowManager_.bringWindowToFront(this);
+    }
+
     function setParamImpl_(param, val){
         switch(param){
             case EditorGUIFramework_WindowParam.POSITION:{
@@ -112,11 +119,9 @@
                 mSizeWithBorders_ = val + RESIZE_BORDER*2;
                 mWindow_.setSize(mSizeWithBorders_);
                 mWindowCloseButton_.setText("X");
-                mWindowCloseButton_.setSkinPack("EditorGUIFramework/WindowCloseButtonSkinPack");
 
                 mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
                 mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
-                mWindowTitlePanel_.setDatablock("EditorGUIFramework_FrameBg");
 
                 mTitleLabel_.setPosition(RESIZE_BORDER+5, RESIZE_BORDER);
                 mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x*2, mTitleLabel_.getSize().y);
@@ -133,6 +138,11 @@
             case EditorGUIFramework_WindowParam.Z_ORDER:{
                 mZ_ = val;
                 mWindow_.setZOrder(val);
+                break;
+            }
+            case EditorGUIFramework_WindowParam.FOCUS:{
+                mFocused_ = val;
+                mWindowTitlePanel_.setDatablock(mFocused_ ? "EditorGUIFramework_FrameBgActive" : "EditorGUIFramework_FrameBg");
                 break;
             }
         }

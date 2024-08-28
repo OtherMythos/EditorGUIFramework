@@ -74,6 +74,9 @@
         placeInitialZ_(window);
         //bringWindowToFront(window);
         mActiveWindows_.append(window);
+        if(mActiveWindows_.len() == 1){
+            bringWindowToFront(window);
+        }
     }
 
     function deRegisterWindow(window){
@@ -135,6 +138,11 @@
     function bringWindowToFront(window){
         bringWindowToFront_(window);
         reprocessWindowZOrder_();
+
+        foreach(i in mActiveWindows_){
+            setWindowParam_(i, EditorGUIFramework_WindowParam.FOCUS, false);
+        }
+        setWindowParam_(window, EditorGUIFramework_WindowParam.FOCUS, true);
     }
 
     function setWindowParam_(window, param, val){
@@ -151,6 +159,10 @@
                 window.setParamImpl_(param, val);
                 break;
             }
+            case EditorGUIFramework_WindowParam.FOCUS:{
+                window.setParamImpl_(param, val);
+                break;
+            }
         }
     }
 
@@ -161,11 +173,17 @@
 
     function attemptWindowDragBegin_(window){
         mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG, mStateContext_, window);
+        if(mStateMachine_.isState(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG)){
+            bringWindowToFront(window);
+        }
     }
 
     function requestResizeBegin_(window){
         mStateContext_.mouseButton[0] = true;
         mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_RESIZE, mStateContext_, window);
+        if(mStateMachine_.isState(EditorGUIFramework_WindowManagerStateEvent.WINDOW_RESIZE)){
+            bringWindowToFront(window);
+        }
     }
 
     function reprocessWindowZOrder_(){

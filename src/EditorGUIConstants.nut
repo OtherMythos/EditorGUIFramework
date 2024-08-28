@@ -24,7 +24,8 @@ enum EditorGUIFramework_WindowParam{
 
     POSITION,
     SIZE,
-    Z_ORDER
+    Z_ORDER,
+    FOCUS,
 
     MAX
 };

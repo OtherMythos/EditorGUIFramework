@@ -34,6 +34,7 @@ function start(){
     local winSecond = guiFrameworkBase.createWindow("example window");
     winSecond.setPosition(150, 150);
     winSecond.setSize(400, 400);
+    winSecond.focus();
 
     {
         local exampleWin = winSecond.getWin();
