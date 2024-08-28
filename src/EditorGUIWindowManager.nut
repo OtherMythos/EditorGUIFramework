@@ -6,6 +6,9 @@
     mStateContext_ = null;
     mStateMachine_ = null;
 
+    mToolbar_ = null;
+    mZOrderManager_ = null;
+
     //Z indexes indexed by their internal Z.
     mZIndexes_ = null
     //Windows in order with the highest index at the end.
@@ -13,6 +16,7 @@
     mZIndexesOrdered_ = null
 
     MAX_WINDOWS = 100
+    MAX_TOOLBAR_MENUS = 10
 
     constructor(bus){
         mBus_ = bus;
@@ -28,6 +32,7 @@
             "data": null
         };
         mStateMachine_ = StateMachine(mStateContext_);
+        mZOrderManager_ = ZOrderManager();
 
         mZIndexes_ = array(MAX_WINDOWS, null);
         mZIndexesOrdered_ = [];
@@ -117,7 +122,8 @@
             mZIndexes_[idx] = null;
         }
         mZIndexes_[z] = window;
-        setWindowParam_(window, EditorGUIFramework_WindowParam.Z_ORDER, z);
+        local resolvedZ = mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.WINDOW, z);
+        setWindowParam_(window, EditorGUIFramework_WindowParam.Z_ORDER, resolvedZ);
     }
 
     function bringWindowToFront_(window){
@@ -144,6 +150,11 @@
                 break;
             }
         }
+    }
+
+    function setToolbar(toolbar){
+        mToolbar_ = toolbar;
+        mToolbar_.setup_(mBus_, mZOrderManager_);
     }
 
     function attemptWindowDragBegin_(window){
@@ -187,6 +198,52 @@
     }
     function checkIntersect_(x, y, xx, yy, width, height){
         return (x >= xx && y >= yy && x <= xx+width && y <= yy+height);
+    }
+
+}
+
+::EditorGUIFramework.WindowManager.ZOrderManager <- class{
+
+    START = 5;
+    UNKNOWN = 6;
+    WINDOW_START = 10;
+    WINDOW_END = null;
+    POST_WINDOW_PADDING = 10;
+    POST_WINDOW_START = null;
+    TOOLBAR_START = null;
+    TOOLBAR_END = null;
+
+    constructor(){
+        WINDOW_END = WINDOW_START + ::EditorGUIFramework.WindowManager.MAX_WINDOWS;
+        POST_WINDOW_START = WINDOW_END + POST_WINDOW_PADDING;
+        TOOLBAR_START = POST_WINDOW_START + POST_WINDOW_PADDING;
+        TOOLBAR_END = TOOLBAR_START + ::EditorGUIFramework.WindowManager.MAX_TOOLBAR_MENUS;
+    }
+
+    function getZForWindowObject(winType, idx=null){
+        switch(winType){
+            case EditorGUIFramework_WindowManagerObjectType.WINDOW:{
+                assert(idx < ::EditorGUIFramework.WindowManager.MAX_WINDOWS);
+                local outIdx = WINDOW_START + idx;
+                assert(outIdx >= WINDOW_START && outIdx < WINDOW_END);
+                return outIdx;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.INPUT_BLOCKER:{
+                return POST_WINDOW_START + 1;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR:{
+                return POST_WINDOW_START + 2;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU:{
+                assert(idx < ::EditorGUIFramework.WindowManager.MAX_WINDOWS);
+                local outIdx = TOOLBAR_START + idx;
+                assert(outIdx >= TOOLBAR_START && outIdx < TOOLBAR_END);
+                return outIdx;
+            }
+            default:{
+                return UNKNOWN;
+            }
+        }
     }
 
 }

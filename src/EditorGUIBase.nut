@@ -4,8 +4,6 @@
     mObjectManager_ = null;
     mWindowManager_ = null;
 
-    mToolbar_ = null;
-
     mMouseButtonStates_ = null;
 
     constructor(){
@@ -45,8 +43,7 @@
     }
 
     function setToolbar(toolbar){
-        mToolbar_ = toolbar;
-        mToolbar_.setup_(mBus_);
+        mWindowManager_.setToolbar(toolbar);
     }
 
     function setMousePosition(x, y=null){

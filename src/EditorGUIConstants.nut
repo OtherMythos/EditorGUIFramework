@@ -62,3 +62,12 @@ enum EditorGUIFramework_WindowManagerStateEvent{
 
     MAX
 };
+
+enum EditorGUIFramework_WindowManagerObjectType{
+    NONE,
+
+    WINDOW,
+    INPUT_BLOCKER,
+    TOOLBAR,
+    TOOLBAR_MENU
+};

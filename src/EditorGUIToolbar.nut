@@ -3,6 +3,7 @@
     mData_ = null;
     mWindow_ = null;
     mBus_ = null;
+    mZOrderManager_ = null;
 
     mBarItems_ = null;
 
@@ -13,12 +14,14 @@
         mBarItems_ = [];
     }
 
-    function setup_(bus){
+    function setup_(bus, zManager){
         mBus_ = bus;
         mWindow_ = _gui.createWindow();
+        mZOrderManager_ = zManager;
 
         mWindow_.setPosition(0, 0);
         mWindow_.setSize(_window.getWidth(), 100);
+        mWindow_.setZOrder(mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR));
 
         //Draw the initial bar
         local totalX = 0;
@@ -75,7 +78,7 @@
         local barItem = mBarItems_[idx];
         local pos = barItem.getPosition();
         pos.y += barItem.getSize().y;
-        mActiveToolbar_ = ToolbarMenu(this, mData_[idx][1], pos);
+        mActiveToolbar_ = ToolbarMenu(this, mData_[idx][1], mZOrderManager_, pos);
 
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_OPENED);
     }
@@ -95,8 +98,9 @@
     mData_ = null;
     mHoverPanel_ = null;
     mCreator_ = null;
+    mZOrderManager_ = null;
 
-    constructor(creator, data, pos){
+    constructor(creator, data, zOrderManager, pos){
         mCreator_ = creator;
         mEntries_ = array(data.len(), null);
         mWindow_ = _gui.createWindow();
@@ -104,6 +108,7 @@
         mHoverPanel_.setVisible(false);
         mHoverPanel_.setDatablock("EditorGUIFramework_FrameBg");
         mData_ = data;
+        mZOrderManager_ = zOrderManager;
 
         local posY = 0;
         print(_prettyPrint(data));
@@ -142,6 +147,7 @@
         local childSize = mWindow_.calculateChildrenSize();
         mWindow_.setSize(childSize.x * 1.5, childSize.y + 10);
         mWindow_.setPosition(pos);
+        mWindow_.setZOrder(mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU, 0));
 
         for(local i = 0; i < mEntries_.len(); i++){
             local e = mEntries_[i];
