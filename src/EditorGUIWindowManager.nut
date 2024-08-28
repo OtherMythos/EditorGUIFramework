@@ -43,7 +43,9 @@
     function notifyBusEvent(event, data){
         if(event == EditorGUIFramework_BusEvent.MOUSE_BUTTON_PRESS){
             mStateContext_.mouseButton[data] = true;
-            reprocessMousePosition_();
+            if(mStateMachine_.isState(EditorGUIFramework_WindowManagerState.NONE)){
+                reprocessMousePosition_();
+            }
         }else if(event == EditorGUIFramework_BusEvent.MOUSE_BUTTON_RELEASE){
             mStateContext_.mouseButton[data] = false;
             //reprocessMousePosition_();
@@ -280,6 +282,10 @@
     constructor(contextData){
         mContextData_ = contextData;
         beginState_(EditorGUIFramework_WindowManagerState.NONE);
+    }
+
+    function isState(state){
+        return state == mCurrentState_;
     }
 
     function beginState_(state){
