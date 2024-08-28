@@ -80,12 +80,15 @@
         pos.y += barItem.getSize().y;
         mActiveToolbar_ = ToolbarMenu(this, mData_[idx][1], mZOrderManager_, pos);
 
+        mZOrderManager_.generateBlockerWindowForObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR);
+
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_OPENED);
     }
 
     function notifyToolbarDestroyed_(){
         assert(mActiveToolbar_ != null);
         mActiveToolbar_ = null;
+        mZOrderManager_.releaseBlockerWindow();
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_CLOSED);
     }
 

@@ -213,6 +213,8 @@
     TOOLBAR_START = null;
     TOOLBAR_END = null;
 
+    mBlockerWindow_ = null;
+
     constructor(){
         WINDOW_END = WINDOW_START + ::EditorGUIFramework.WindowManager.MAX_WINDOWS;
         POST_WINDOW_START = WINDOW_END + POST_WINDOW_PADDING;
@@ -244,6 +246,24 @@
                 return UNKNOWN;
             }
         }
+    }
+
+    function generateBlockerWindowForObject(winType){
+        assert(mBlockerWindow_ == null);
+
+        mBlockerWindow_ = _gui.createWindow();
+        mBlockerWindow_.setPosition(0, 0);
+        mBlockerWindow_.setSize(_window.getSize());
+        mBlockerWindow_.setVisualsEnabled(false);
+
+        local zIdx = getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.INPUT_BLOCKER);
+        mBlockerWindow_.setZOrder(zIdx);
+    }
+
+    function releaseBlockerWindow(){
+        assert(mBlockerWindow_ != null);
+        _gui.destroy(mBlockerWindow_);
+        mBlockerWindow_ = null;
     }
 
 }
