@@ -5,6 +5,7 @@
     mCurrentMousePos_ = null
     mStateContext_ = null;
     mStateMachine_ = null;
+    mWindowCollided_ = null;
 
     mToolbar_ = null;
     mZOrderManager_ = null;
@@ -45,12 +46,16 @@
             mStateContext_.mouseButton[data] = true;
             if(mStateMachine_.isState(EditorGUIFramework_WindowManagerState.NONE)){
                 reprocessMousePosition_();
+                if(mWindowCollided_ != null){
+                    bringWindowToFront(mWindowCollided_);
+                }
             }
         }else if(event == EditorGUIFramework_BusEvent.MOUSE_BUTTON_RELEASE){
             mStateContext_.mouseButton[data] = false;
             //reprocessMousePosition_();
         }else if(event == EditorGUIFramework_BusEvent.MOUSE_POS_CHANGE){
             mStateContext_.mousePos = data;
+            reprocessMousePosition_();
             setMousePosition(data);
         }else if(event == EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN){
             //TODO bit of a hack to get windows dragging properly.
@@ -171,6 +176,12 @@
         mToolbar_.setup_(mBus_, mZOrderManager_);
     }
 
+    function mouseInteracting(){
+        if(!mStateMachine_.isState(EditorGUIFramework_WindowManagerState.NONE)) return true;
+
+        return mWindowCollided_ != null;
+    }
+
     function attemptWindowDragBegin_(window){
         mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG, mStateContext_, window);
         if(mStateMachine_.isState(EditorGUIFramework_WindowManagerStateEvent.WINDOW_DRAG)){
@@ -210,11 +221,13 @@
             local i = mActiveWindows_[c];
             local p = i.mPosWithBorders_;
             local s = i.mSizeWithBorders_;
+            mWindowCollided_ = i;
             if(!checkIntersect_(x, y, p.x, p.y, s.x, s.y)) continue;
             //The mouse is intersecting this window.
-            bringWindowToFront(i);
             return;
         }
+
+        mWindowCollided_ = null;
     }
     function checkIntersect_(x, y, xx, yy, width, height){
         return (x >= xx && y >= yy && x <= xx+width && y <= yy+height);

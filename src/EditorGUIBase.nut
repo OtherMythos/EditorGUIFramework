@@ -51,6 +51,10 @@
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.MOUSE_POS_CHANGE, newPos);
     }
 
+    function mouseInteracting(){
+        return mWindowManager_.mouseInteracting();
+    }
+
     function setMouseButton(button, pressed){
         if(mMouseButtonStates_[button] != pressed){
             //Change in button state.
