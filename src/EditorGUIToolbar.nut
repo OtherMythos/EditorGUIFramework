@@ -50,6 +50,19 @@
 
         mWindow_.setClipBorders(0, 0, 0, 0);
         mWindow_.setSize(_window.getWidth(), mBarItems_[0].getSize().y);
+
+        mBus_.subscribeObject(this);
+    }
+
+    function notifyBusEvent(event, data){
+        if(event == EditorGUIFramework_BusEvent.INPUT_BLOCKER_CLICKED){
+            shutdownActiveToolbar();
+        }
+    }
+
+    function shutdownActiveToolbar(){
+        if(mActiveToolbar_ == null) return;
+        mActiveToolbar_.shutdown();
     }
 
     function notifyMenuItemPress_(idx){

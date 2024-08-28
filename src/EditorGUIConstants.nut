@@ -9,6 +9,8 @@ enum EditorGUIFramework_BusEvent{
 
     TOOLBAR_OPENED,
     TOOLBAR_CLOSED,
+
+    INPUT_BLOCKER_CLICKED,
 };
 enum EditorGUIFramework_BusRequest{
     NONE,

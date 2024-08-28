@@ -32,7 +32,7 @@
             "data": null
         };
         mStateMachine_ = StateMachine(mStateContext_);
-        mZOrderManager_ = ZOrderManager();
+        mZOrderManager_ = ZOrderManager(mBus_);
 
         mZIndexes_ = array(MAX_WINDOWS, null);
         mZIndexesOrdered_ = [];
@@ -206,6 +206,8 @@
 
 ::EditorGUIFramework.WindowManager.ZOrderManager <- class{
 
+    mBus_ = null;
+
     START = 5;
     UNKNOWN = 6;
     WINDOW_START = 10;
@@ -217,7 +219,9 @@
 
     mBlockerWindow_ = null;
 
-    constructor(){
+    constructor(bus){
+        mBus_ = bus;
+
         WINDOW_END = WINDOW_START + ::EditorGUIFramework.WindowManager.MAX_WINDOWS;
         POST_WINDOW_START = WINDOW_END + POST_WINDOW_PADDING;
         TOOLBAR_START = POST_WINDOW_START + POST_WINDOW_PADDING;
@@ -257,6 +261,15 @@
         mBlockerWindow_.setPosition(0, 0);
         mBlockerWindow_.setSize(_window.getSize());
         mBlockerWindow_.setVisualsEnabled(false);
+        mBlockerWindow_.setClipBorders(0, 0, 0, 0);
+
+        local blockerButton = mBlockerWindow_.createButton();
+        blockerButton.setPosition(0, 0);
+        blockerButton.setSize(mBlockerWindow_.getSize());
+        blockerButton.setVisualsEnabled(false);
+        blockerButton.attachListenerForEvent(function(widget, action){
+            mBus_.transmitEvent(EditorGUIFramework_BusEvent.INPUT_BLOCKER_CLICKED);
+        }, _GUI_ACTION_RELEASED, this);
 
         local zIdx = getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.INPUT_BLOCKER);
         mBlockerWindow_.setZOrder(zIdx);
