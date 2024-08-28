@@ -4,6 +4,7 @@
     mWindow_ = null;
     mBus_ = null;
     mZOrderManager_ = null;
+    mButtonHighlightPanel_ = null;
 
     mBarItems_ = null;
 
@@ -19,9 +20,19 @@
         mWindow_ = _gui.createWindow();
         mZOrderManager_ = zManager;
 
+        //Create a button to claim the keyboard navigation.
+        local testButton = mWindow_.createButton();
+        testButton.setPosition(0, 0);
+        testButton.setSize(1, 1);
+        testButton.setVisualsEnabled(false);
+
         mWindow_.setPosition(0, 0);
         mWindow_.setSize(_window.getWidth(), 100);
         mWindow_.setZOrder(mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR));
+
+        mButtonHighlightPanel_ = mWindow_.createPanel();
+        mButtonHighlightPanel_.setVisible(false);
+        mButtonHighlightPanel_.setDatablock("EditorGUIFramework_FrameBg");
 
         //Draw the initial bar
         local totalX = 0;
@@ -35,6 +46,8 @@
             local button = mWindow_.createButton();
             button.setText(name);
             button.setPosition(totalX, 0);
+            button.setVisualsEnabled(false);
+            button.setKeyboardNavigable(false);
             button.attachListener(function(widget, action){
                 if(action == _GUI_ACTION_PRESSED){
                     notifyMenuItemPress_(widget.getUserId());
@@ -42,13 +55,16 @@
                 else if(action == _GUI_ACTION_HIGHLIGHTED){
                     notifyMenuItemHighlight_(widget.getUserId());
                 }
+                else if(action == _GUI_ACTION_CANCEL){
+                    notifyMenuItemHighlightEnd_();
+                }
             }, this);
             button.setUserId(i);
             mBarItems_.append(button);
             totalX += button.getSize().x;
         }
 
-        mWindow_.setClipBorders(0, 0, 0, 0);
+        mWindow_.setSkin("EditorGUIFramework/WindowNoBorder");
         mWindow_.setSize(_window.getWidth(), mBarItems_[0].getSize().y);
 
         mBus_.subscribeObject(this);
@@ -57,6 +73,7 @@
     function notifyBusEvent(event, data){
         if(event == EditorGUIFramework_BusEvent.INPUT_BLOCKER_CLICKED){
             shutdownActiveToolbar();
+            notifyMenuItemHighlightEnd_();
         }
     }
 
@@ -76,7 +93,18 @@
         }
     }
 
+    function notifyMenuItemHighlightEnd_(){
+        if(mActiveToolbar_ == null){
+            mButtonHighlightPanel_.setVisible(false);
+        }
+    }
+
     function notifyMenuItemHighlight_(idx){
+        mButtonHighlightPanel_.setVisible(true);
+
+        local item = mBarItems_[idx];
+        mButtonHighlightPanel_.setPosition(item.getPosition());
+        mButtonHighlightPanel_.setSize(item.getSize());
         if(mActiveToolbar_ == null) return;
 
         triggerMenuForIdx_(idx);
@@ -103,6 +131,10 @@
         mActiveToolbar_ = null;
         mZOrderManager_.releaseBlockerWindow();
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_CLOSED);
+    }
+
+    function notifyToolbarClicked_(){
+        mButtonHighlightPanel_.setVisible(false);
     }
 
 };
@@ -176,6 +208,7 @@
         if(targetFunc != null){
             targetFunc();
         }
+        mCreator_.notifyToolbarClicked_();
         shutdown();
     }
 

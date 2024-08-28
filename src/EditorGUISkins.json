@@ -15,6 +15,14 @@
                 "all" : [5, 0]
             }
         },
+        "EditorGUIFramework/WindowNoBorder" :
+        {
+            "material" : "internal/WindowMaterial",
+            "borders" :
+            {
+                "all" : [0, 0]
+            }
+        },
         "EditorGUIFramework/PanelSkin" :
         {
             "material" : "internal/PanelSkin",
