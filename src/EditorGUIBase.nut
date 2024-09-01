@@ -73,10 +73,13 @@
         }
     }
 
-    //TODO Each window should have an id
-    function createWindow(name){
+    function attachWindowManagerListener(listener){
+        mWindowManager_.attachWindowManagerListener(listener);
+    }
+
+    function createWindow(id, name){
         local obj = mObjectManager_.getObject();
-        local window = ::EditorGUIFramework.Window(obj, mWindowManager_, name);
+        local window = ::EditorGUIFramework.Window(id, obj, mWindowManager_, name);
         mWindowManager_.registerWindow(window);
 
         return window;

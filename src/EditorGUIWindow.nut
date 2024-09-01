@@ -2,6 +2,7 @@
     mObj_ = null
     mWindowManager_ = null
 
+    mId_ = null;
     mTitle_ = null
     mPos_ = null
     mPosWithBorders_ = null
@@ -20,7 +21,8 @@
 
     RESIZE_BORDER = 8
 
-    constructor(obj, winMan, title){
+    constructor(id, obj, winMan, title){
+        mId_ = id;
         mObj_ = obj;
         mWindowManager_ = winMan;
         mTitle_ = title;
@@ -77,6 +79,10 @@
         mWindow_.setClipBorders(0, 0, 0, 0);
 
         //layoutLine.layout();
+    }
+
+    function getId(){
+        return mId_;
     }
 
     function getWin(){

@@ -1,3 +1,23 @@
+::EditorGUIFramework.WindowManagerListener <- class{
+
+    function positioned(id, newPos){
+
+    }
+
+    function resized(id, newSize){
+
+    }
+
+    function closed(id){
+
+    }
+
+    function focused(id){
+
+    }
+
+};
+
 ::EditorGUIFramework.WindowManager <- class{
 
     mBus_ = null;
@@ -6,6 +26,7 @@
     mStateContext_ = null;
     mStateMachine_ = null;
     mWindowCollided_ = null;
+    mListener_ = null
 
     mToolbar_ = null;
     mZOrderManager_ = null;
@@ -66,6 +87,10 @@
         }else if(event == EditorGUIFramework_BusEvent.TOOLBAR_CLOSED){
             mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_CLOSED, mStateContext_, null);
         }
+    }
+
+    function attachWindowManagerListener(listener){
+        mListener_ = listener;
     }
 
     function update(){
@@ -154,10 +179,12 @@
         switch(param){
             case EditorGUIFramework_WindowParam.POSITION:{
                 window.setParamImpl_(param, val);
+                if(mListener_) mListener_.positioned(window.getId(), val.copy());
                 break;
             }
             case EditorGUIFramework_WindowParam.SIZE:{
                 window.setParamImpl_(param, val);
+                if(mListener_) mListener_.resized(window.getId(), val.copy());
                 break;
             }
             case EditorGUIFramework_WindowParam.Z_ORDER:{
@@ -166,6 +193,7 @@
             }
             case EditorGUIFramework_WindowParam.FOCUS:{
                 window.setParamImpl_(param, val);
+                if(mListener_) mListener_.focused(window.getId());
                 break;
             }
         }
