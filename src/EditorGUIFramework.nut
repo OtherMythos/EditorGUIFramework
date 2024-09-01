@@ -22,3 +22,7 @@ _doFile("script://EditorGUIBus.nut");
 _doFile("script://EditorGUIWindowManager.nut");
 _doFile("script://EditorGUIWindow.nut");
 _doFile("script://EditorGUIToolbar.nut");
+
+::EditorGUIFramework.Widget <- {};
+
+_doFile("script://widgets/EditorGUIWidgetNumericInput.nut");

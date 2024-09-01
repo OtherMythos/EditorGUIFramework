@@ -26,12 +26,12 @@ function start(){
     local width = _window.getWidth();
     local height = _window.getHeight();
     for(local i = 0; i < 50; i++){
-        local win = guiFrameworkBase.createWindow("win-" + i.tostring());
+        local win = guiFrameworkBase.createWindow(i, "win-" + i.tostring());
         win.setPosition(_random.randInt(width), _random.randInt(height));
         win.setSize(100 + _random.randInt(50), 100 + _random.randInt(50));
     }
 
-    local winSecond = guiFrameworkBase.createWindow("example window");
+    local winSecond = guiFrameworkBase.createWindow(10000, "example window");
     winSecond.setPosition(150, 150);
     winSecond.setSize(400, 400);
     winSecond.focus();
@@ -47,6 +47,12 @@ function start(){
         local exampleButton = exampleWin.createButton();
         exampleButton.setText("button");
         layout.addCell(exampleButton);
+
+        local numericSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin);
+        numericSpinner.addToLayout(layout);
+
+        local numericFloatSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin, true);
+        numericFloatSpinner.addToLayout(layout);
 
         layout.layout();
     }
