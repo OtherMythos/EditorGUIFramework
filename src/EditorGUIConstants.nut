@@ -74,3 +74,7 @@ enum EditorGUIFramework_WindowManagerObjectType{
     TOOLBAR,
     TOOLBAR_MENU
 };
+
+enum EditorGUIFramework_WidgetCallbackEvent{
+    VALUE_CHANGED
+};

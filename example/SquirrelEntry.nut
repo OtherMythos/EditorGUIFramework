@@ -50,9 +50,28 @@ function start(){
 
         local numericSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin);
         numericSpinner.addToLayout(layout);
+        numericSpinner.attachListener(function(widget, action){
+            local val = widget.getValue();
+            print(val);
+        });
 
         local numericFloatSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin, true);
         numericFloatSpinner.addToLayout(layout);
+        numericFloatSpinner.attachListener(function(widget, action){
+            local val = widget.getValue();
+            print(val);
+        });
+
+        local vector3Input = ::EditorGUIFramework.Widget.Vector3Input(exampleWin, "vector3");
+        vector3Input.addToLayout(layout);
+        /*
+        vector3Input.attachListener(function(widget, action){
+            if(action == EditorGUIFramework_WidgetCallbackEvent.VALUE_CHANGED){
+                local val = widget.getValue();
+                print(val);
+            }
+        });
+        */
 
         layout.layout();
     }

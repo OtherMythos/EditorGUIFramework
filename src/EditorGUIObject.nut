@@ -1,4 +1,4 @@
-EditorGUIFramework.Object <- class{
+::EditorGUIFramework.Object <- class{
     mId_ = null
     mBus_ = null
     constructor(id, bus){

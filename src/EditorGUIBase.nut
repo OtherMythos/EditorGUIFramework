@@ -88,15 +88,25 @@
 
 ::EditorGUIFramework.Base.ObjectManager <- class{
     mIdCount = 0;
-    mTotalObjecs = null;
+    mTotalObjects = null;
     mRecycleIds = null;
 
     mBus_ = null;
     constructor(bus){
-        mTotalObjecs = [];
+        mTotalObjects = [];
         mRecycleIds = [];
         mBus_ = bus;
     }
+    //NOTE do not commit
+    function getObjectTest(item){
+        item.mId_ = getId_();
+        item.mBus_ = mBus_;
+        mTotalObjects[item.mId_] = item;
+    }
+    function getWidgetForTest(id){
+        return mTotalObjects[id];
+    }
+
     function getObject(){
         return EditorGUIFramework.Object(getId_(), mBus_);
     }
@@ -110,6 +120,7 @@
 
         local id = mIdCount;
         mIdCount++;
-        return mIdCount;
+        mTotalObjects.append(null);
+        return id;
     }
 };
