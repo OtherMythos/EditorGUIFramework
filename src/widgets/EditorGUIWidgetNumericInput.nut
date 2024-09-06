@@ -104,7 +104,7 @@
 };
 
 ::EditorGUIFramework.Widget.NumericInput.floatRegex <-
-regexp("^(\\d*(\\.\\d*)?)$");
+regexp("^-?(\\d*(\\.\\d*)?)$");
 
 ::EditorGUIFramework.Widget.NumericInput.intRegex <-
-regexp("^(\\d*)$");
+regexp("^-?(\\d*)$");
