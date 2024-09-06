@@ -2,6 +2,7 @@
 
     mWidget_ = null;
     mCallback_ = null;
+    mParentCallback_ = null;
     mAllowFloat_ = false;
 
     constructor(parent, allowFloat=false){
@@ -14,8 +15,8 @@
         editbox.attachListenerForEvent(targetCallback, _GUI_ACTION_VALUE_CHANGED, this);
         mWidget_ = editbox;
 
-        guiFrameworkBase.mObjectManager_.getObjectTest(this);
-        mWidget_.setUserId(mId_);
+        //guiFrameworkBase.mObjectManager_.getObjectTest(this);
+        //mWidget_.setUserId(mId_);
     }
 
     function editboxIntCallback(widget, action){
@@ -29,6 +30,9 @@
 
     function attachListener(callback){
         mCallback_ = callback;
+    }
+    function attachParentListener(parentCallback){
+        mParentCallback_ = parentCallback;
     }
 
     function callback_(widget, action, regex){
@@ -51,7 +55,7 @@
             widget.setText(value);
         }
         if(enterPressed){
-            //Do something
+            notifyCallback_(EditorGUIFramework_WidgetCallbackEvent.VALUE_CHANGED);
         }
 
         //Obtain the 'this'.
@@ -59,8 +63,14 @@
         //if(widgetObj.mCallback_ != null){
         //    widgetObj.mCallback_(widgetObj, EditorGUIFramework_WidgetCallbackEvent.VALUE_CHANGED);
         //}
+    }
+
+    function notifyCallback_(event){
         if(mCallback_ != null){
-            mCallback_(this, EditorGUIFramework_WidgetCallbackEvent.VALUE_CHANGED);
+            mCallback_.call(this, event);
+        }
+        if(mParentCallback_ != null){
+            mParentCallback_.call(this, event);
         }
     }
 
@@ -70,11 +80,25 @@
 
     function getValue(){
         local value = mWidget_.getText();
+        if(value == ""){
+            return mAllowFloat_ ? 0.0 : 0;
+        }
         if(mAllowFloat_){
             return value.tofloat();
         }else{
             return value.tointeger();
         }
+    }
+
+    function setValue(value){
+        local v = null;
+        local targetRegex = mAllowFloat_ ? floatRegex : intRegex;
+        local strVal = (mAllowFloat_ ? value.tofloat() : value.tointeger()).tostring();
+        local match = targetRegex.match(strVal);
+        if(!match){
+            return;
+        }
+        mWidget_.setText(strVal);
     }
 
 };
