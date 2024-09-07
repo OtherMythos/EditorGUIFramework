@@ -22,6 +22,7 @@
 
     mBus_ = null;
     mActiveWindows_ = null
+    mActiveWindowsById_ = null;
     mCurrentMousePos_ = null
     mStateContext_ = null;
     mStateMachine_ = null;
@@ -43,6 +44,7 @@
     constructor(bus){
         mBus_ = bus;
         mActiveWindows_ = [];
+        mActiveWindowsById_ = {};
         mCurrentMousePos_ = Vec2();
         mStateContext_ = {
             "winMan": this,
@@ -97,13 +99,15 @@
         mStateMachine_.updateState();
     }
 
-    function registerWindow(window){
+    function registerWindow(id, window){
         if(mActiveWindows_.len() + 1 >= MAX_WINDOWS){
             throw "MAX_WINDOWS has been reached.";
         }
         placeInitialZ_(window);
         //bringWindowToFront(window);
         mActiveWindows_.append(window);
+        assert(!mActiveWindowsById_.rawin(id));
+        mActiveWindowsById_.rawset(id, window);
         if(mActiveWindows_.len() == 1){
             bringWindowToFront(window);
         }
@@ -113,12 +117,33 @@
         local idx = mActiveWindows_.find(window);
         assert(idx != null);
         mActiveWindows_.remove(idx);
+        mActiveWindowsById_.rawdelete(id)
 
         idx = mZIndexes_.find(window);
         assert(idx != null);
         mZIndexes_[idx] = null;
 
         window.shutdown();
+    }
+
+    function populateArrayWithWindowState_(array){
+        foreach(c,i in mActiveWindowsById_){
+            local data = {
+                "id": c,
+                "pos": format("%f, %f", i.mPos_.x, i.mPos_.y),
+                "size": format("%f, %f", i.mSize_.x, i.mSize_.y),
+            };
+            array.append(data);
+        }
+    }
+
+    function applyWindowStateData(data){
+        foreach(c,i in data){
+            if(!mActiveWindowsById_.rawin(c)) continue;
+            local win = mActiveWindowsById_[c];
+            if(i.pos != null) win.setPosition(i.pos);
+            if(i.size != null) win.setSize(i.size);
+        }
     }
 
     function setMousePosition(pos){

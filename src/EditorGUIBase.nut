@@ -80,9 +80,41 @@
     function createWindow(id, name){
         local obj = mObjectManager_.getObject();
         local window = ::EditorGUIFramework.Window(id, obj, mWindowManager_, name);
-        mWindowManager_.registerWindow(window);
+        mWindowManager_.registerWindow(id, window);
 
         return window;
+    }
+
+    function serialiseWindowStates(outPath){
+        _system.ensureUserDirectory();
+
+        local outData = {
+            "vals": []
+        };
+        mWindowManager_.populateArrayWithWindowState_(outData.vals);
+
+        _system.writeJsonAsFile(outPath, outData);
+    }
+
+    function loadWindowStates(loadPath){
+        if(!_system.exists(loadPath)) return;
+        local data = _system.readJSONAsTable(loadPath);
+        if(!data.rawin("vals")) return;
+
+        local parsedWindows = {};
+        foreach(i in data.rawget("vals")){
+            if(!i.rawin("id")) continue;
+            local value = {
+                "size": null,
+                "pos": null,
+            };
+            if(i.rawin("size")) value.size = Vec2(i.rawget("size"));
+            if(i.rawin("pos")) value.pos = Vec2(i.rawget("pos"));
+            parsedWindows.rawset(i.rawget("id"), value);
+        }
+
+        //With the windows parsed, go through and find and position them.
+        mWindowManager_.applyWindowStateData(parsedWindows);
     }
 };
 
