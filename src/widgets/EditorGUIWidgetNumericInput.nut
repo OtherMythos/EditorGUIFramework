@@ -5,7 +5,10 @@
     mParentCallback_ = null;
     mAllowFloat_ = false;
 
-    constructor(parent, allowFloat=false){
+    mLabelLayout_ = null;
+    mLabel_ = null;
+
+    constructor(parent, allowFloat=false, label=null){
         mAllowFloat_ = allowFloat;
 
         local editbox = parent.createEditbox();
@@ -14,6 +17,15 @@
         local targetCallback = allowFloat ? editboxFloatCallback : editboxIntCallback;
         editbox.attachListenerForEvent(targetCallback, _GUI_ACTION_VALUE_CHANGED, this);
         mWidget_ = editbox;
+
+        if(label != null){
+            mLabelLayout_ = _gui.createLayoutLine(_LAYOUT_HORIZONTAL);
+            mLabelLayout_.addCell(editbox);
+
+            mLabel_ = parent.createLabel();
+            mLabel_.setText(label);
+            mLabelLayout_.addCell(mLabel_);
+        }
 
         //guiFrameworkBase.mObjectManager_.getObjectTest(this);
         //mWidget_.setUserId(mId_);
@@ -75,7 +87,8 @@
     }
 
     function addToLayout(layout){
-        layout.addCell(mWidget_);
+        //layout.addCell(mWidget_);
+        layout.addCell(mLabelLayout_ != null ? mLabelLayout_ : mWidget_);
     }
 
     function getValue(){
