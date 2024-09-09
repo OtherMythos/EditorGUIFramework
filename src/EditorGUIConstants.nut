@@ -45,6 +45,7 @@ enum EditorGUIFramework_WindowManagerState{
     WINDOW_RESIZE,
 
     TOOLBAR_OPEN,
+    POPUP_ACTIVE,
 
     MAX
 };
@@ -63,6 +64,9 @@ enum EditorGUIFramework_WindowManagerStateEvent{
     TOOLBAR_OPENED,
     TOOLBAR_CLOSED,
 
+    POPUP_OPENED,
+    POPUP_CLOSED,
+
     MAX
 };
 
@@ -72,9 +76,17 @@ enum EditorGUIFramework_WindowManagerObjectType{
     WINDOW,
     INPUT_BLOCKER,
     TOOLBAR,
-    TOOLBAR_MENU
+    TOOLBAR_MENU,
+    POPUP_BLOCKER,
+    POPUP,
 };
 
 enum EditorGUIFramework_WidgetCallbackEvent{
     VALUE_CHANGED
+};
+
+enum EditorGUIFramework_PopupConstructionData{
+    DESCRIPTION,
+    CLOSE_BUTTON,
+    ACCEPT_BUTTON
 };

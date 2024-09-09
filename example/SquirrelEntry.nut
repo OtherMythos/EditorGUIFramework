@@ -1,6 +1,5 @@
 
 function start(){
-    _doFile("script://../src/EditorGUIFramework.nut");
 
     local saveFunction = function(){
         print("saving");
@@ -48,14 +47,14 @@ function start(){
         exampleButton.setText("button");
         layout.addCell(exampleButton);
 
-        local numericSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin);
+        local numericSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin, false, "numeric");
         numericSpinner.addToLayout(layout);
         numericSpinner.attachListener(::EditorGUIFramework.Listener(function(widget, action){
             local val = widget.getValue();
             print(val);
         }));
 
-        local numericFloatSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin, true);
+        local numericFloatSpinner = ::EditorGUIFramework.Widget.NumericInput(exampleWin, true, "numeric float");
         numericFloatSpinner.addToLayout(layout);
         numericFloatSpinner.attachListener(::EditorGUIFramework.Listener(function(widget, action){
             local val = widget.getValue();
@@ -78,16 +77,29 @@ function start(){
         });
         */
 
+        local createPopup = exampleWin.createButton();
+        createPopup.setText("Show popup");
+        createPopup.attachListenerForEvent(function(widget, action){
+            local constructionData = [
+                [EditorGUIFramework_PopupConstructionData.DESCRIPTION, "This is a popup"],
+                [EditorGUIFramework_PopupConstructionData.CLOSE_BUTTON, "Close"],
+                [EditorGUIFramework_PopupConstructionData.ACCEPT_BUTTON, "Accept"]
+            ];
+            guiFrameworkBase.createPopup(123, "test popup", constructionData);
+        }, _GUI_ACTION_PRESSED, this);
+        layout.addCell(createPopup);
+
         layout.layout();
     }
+
 }
 
 function update(){
     ::guiFrameworkBase.update();
 
     ::guiFrameworkBase.setMousePosition(_input.getMouseX(), _input.getMouseY());
-    ::guiFrameworkBase.setMouseButton(0, _input.getMouseButton(_MB_LEFT));
-    ::guiFrameworkBase.setMouseButton(1, _input.getMouseButton(_MB_RIGHT));
+    ::guiFrameworkBase.setMouseButton(EditorGUIFramework_MouseButton.LEFT, _input.getMouseButton(_MB_LEFT));
+    ::guiFrameworkBase.setMouseButton(EditorGUIFramework_MouseButton.RIGHT, _input.getMouseButton(_MB_RIGHT));
 }
 
 function end(){

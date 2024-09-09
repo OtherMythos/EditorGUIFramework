@@ -29,6 +29,7 @@
 
         setup();
         setSize(200, 200);
+        setPosition(10, 10);
     }
 
     function setup(){
@@ -91,6 +92,10 @@
 
     function shutdown(){
         _gui.destroy(mWindow_);
+    }
+
+    function getWindowObjectType(){
+        return EditorGUIFramework_WindowManagerObjectType.WINDOW;
     }
 
     function setTitle(title){

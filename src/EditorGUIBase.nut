@@ -85,6 +85,14 @@
         return window;
     }
 
+    function createPopup(id, name, constructionData=null){
+        local obj = mObjectManager_.getObject();
+        local popup = ::EditorGUIFramework.Popup(id, obj, mWindowManager_, name, constructionData);
+        mWindowManager_.registerPopup(id, popup);
+
+        return popup;
+    }
+
     function serialiseWindowStates(outPath){
         _system.ensureUserDirectory();
 

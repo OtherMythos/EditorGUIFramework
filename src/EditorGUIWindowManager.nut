@@ -28,6 +28,7 @@
     mStateMachine_ = null;
     mWindowCollided_ = null;
     mListener_ = null
+    mInputBlocker_ = null
 
     mToolbar_ = null;
     mZOrderManager_ = null;
@@ -113,11 +114,24 @@
         }
     }
 
+    function registerPopup(id, popup){
+        if(mInputBlocker_ != null){
+            return;
+        }
+        registerWindow(id, popup);
+        setWindowParam_(popup, EditorGUIFramework_WindowParam.Z_ORDER, mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.POPUP));
+        //bringWindowToFront(popup);
+
+        mZOrderManager_.generateBlockerWindowForObject(EditorGUIFramework_WindowManagerObjectType.POPUP);
+
+        mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.POPUP_OPENED, mStateContext_, null);
+    }
+
     function deRegisterWindow(window){
         local idx = mActiveWindows_.find(window);
         assert(idx != null);
         mActiveWindows_.remove(idx);
-        mActiveWindowsById_.rawdelete(id)
+        mActiveWindowsById_.rawdelete(window.getId());
 
         idx = mZIndexes_.find(window);
         assert(idx != null);
@@ -158,6 +172,12 @@
         deRegisterWindow(window);
     }
 
+    function closePopup_(window){
+        mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.POPUP_CLOSED, mStateContext_, window);
+        deRegisterWindow(window);
+        mZOrderManager_.releaseBlockerWindow();
+    }
+
     //Reorder the Z list so there is a space at the end.
     function freeUpperZIdx_(){
         //Head through the list backwards, until a hole is found.
@@ -182,7 +202,7 @@
             mZIndexes_[idx] = null;
         }
         mZIndexes_[z] = window;
-        local resolvedZ = mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.WINDOW, z);
+        local resolvedZ = mZOrderManager_.getZForWindowObject(window.getWindowObjectType(), z);
         setWindowParam_(window, EditorGUIFramework_WindowParam.Z_ORDER, resolvedZ);
     }
 
@@ -324,6 +344,7 @@
                 return POST_WINDOW_START + 1;
             }
             case EditorGUIFramework_WindowManagerObjectType.TOOLBAR:{
+                //print(POST_WINDOW_START + 2);
                 return POST_WINDOW_START + 2;
             }
             case EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU:{
@@ -332,9 +353,28 @@
                 assert(outIdx >= TOOLBAR_START && outIdx < TOOLBAR_END);
                 return outIdx;
             }
+            case EditorGUIFramework_WindowManagerObjectType.POPUP:{
+                //TODO add the index value here.
+                return TOOLBAR_END + 2;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.POPUP_BLOCKER:{
+                return TOOLBAR_END + 1;
+            }
             default:{
                 return UNKNOWN;
             }
+        }
+    }
+
+    function getBlockerTypeForObjectType(obj){
+        print(obj);
+        switch(obj){
+            case EditorGUIFramework_WindowManagerObjectType.POPUP:{
+                return EditorGUIFramework_WindowManagerObjectType.POPUP_BLOCKER;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR:
+            default:
+                return EditorGUIFramework_WindowManagerObjectType.INPUT_BLOCKER;
         }
     }
 
@@ -344,7 +384,9 @@
         mBlockerWindow_ = _gui.createWindow();
         mBlockerWindow_.setPosition(0, 0);
         mBlockerWindow_.setSize(_window.getSize());
-        mBlockerWindow_.setVisualsEnabled(false);
+        if(winType != EditorGUIFramework_WindowManagerObjectType.POPUP){
+            mBlockerWindow_.setVisualsEnabled(false);
+        }
         mBlockerWindow_.setClipBorders(0, 0, 0, 0);
 
         local blockerButton = mBlockerWindow_.createButton();
@@ -355,14 +397,18 @@
             mBus_.transmitEvent(EditorGUIFramework_BusEvent.INPUT_BLOCKER_CLICKED);
         }, _GUI_ACTION_RELEASED, this);
 
-        local zIdx = getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.INPUT_BLOCKER);
+        local blockerType = getBlockerTypeForObjectType(winType);
+        local zIdx = getZForWindowObject(blockerType);
         mBlockerWindow_.setZOrder(zIdx);
+
+        _gui.reprocessMousePosition();
     }
 
     function releaseBlockerWindow(){
         assert(mBlockerWindow_ != null);
         _gui.destroy(mBlockerWindow_);
         mBlockerWindow_ = null;
+        _gui.reprocessMousePosition();
     }
 
 }
@@ -437,6 +483,9 @@ local StateDef = class{
         else if(event == EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_OPENED){
             return EditorGUIFramework_WindowManagerState.TOOLBAR_OPEN;
         }
+        else if(event == EditorGUIFramework_WindowManagerStateEvent.POPUP_OPENED){
+            return EditorGUIFramework_WindowManagerState.POPUP_ACTIVE;
+        }
     }
 }
 
@@ -480,6 +529,13 @@ local StateDef = class{
 ::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.TOOLBAR_OPEN] = class extends StateDef{
     function notify(event, ctx, data){
         if(event == EditorGUIFramework_WindowManagerStateEvent.TOOLBAR_CLOSED){
+            return EditorGUIFramework_WindowManagerState.NONE;
+        }
+    }
+};
+::EditorGUIFramework.WindowManager.StateMachine.mStateDefs_[EditorGUIFramework_WindowManagerState.POPUP_ACTIVE] = class extends StateDef{
+    function notify(event, ctx, data){
+        if(event == EditorGUIFramework_WindowManagerStateEvent.POPUP_CLOSED){
             return EditorGUIFramework_WindowManagerState.NONE;
         }
     }
