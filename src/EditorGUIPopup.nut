@@ -3,15 +3,18 @@
     constructor(id, obj, winMan, title, constructionData){
         base.constructor(id, obj, winMan, title);
 
-        local startSize = Vec2(500, 200);
-        setSize(startSize);
-        setPosition(_window.getWidth() / 2 - startSize.x / 2, _window.getHeight() / 2 - startSize.y / 2);
+        setSize(500, 200);
+        centrePopup();
         mWindowCloseButton_.attachListenerForEvent(function(widget, action){
             closePopup();
         }, _GUI_ACTION_PRESSED, this);
         if(constructionData != null){
             constructWithBasicData_(constructionData);
         }
+    }
+
+    function centrePopup(){
+        setPosition(_window.getWidth() / 2 - mSize_.x / 2, _window.getHeight() / 2 - mSize_.y / 2);
     }
 
     #Override
