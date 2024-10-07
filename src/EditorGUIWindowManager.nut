@@ -320,6 +320,8 @@
     POST_WINDOW_START = null;
     TOOLBAR_START = null;
     TOOLBAR_END = null;
+    POPUP_START = null;
+    TOOLBAR_MENU_SOLO_START = null;
 
     mBlockerWindow_ = null;
 
@@ -330,6 +332,7 @@
         POST_WINDOW_START = WINDOW_END + POST_WINDOW_PADDING;
         TOOLBAR_START = POST_WINDOW_START + POST_WINDOW_PADDING;
         TOOLBAR_END = TOOLBAR_START + ::EditorGUIFramework.WindowManager.MAX_TOOLBAR_MENUS;
+        TOOLBAR_MENU_SOLO_START = TOOLBAR_END + 10 + 1;
     }
 
     function getZForWindowObject(winType, idx=null){
@@ -360,6 +363,12 @@
             case EditorGUIFramework_WindowManagerObjectType.POPUP_BLOCKER:{
                 return TOOLBAR_END + 1;
             }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO:{
+                return TOOLBAR_MENU_SOLO_START + 2;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO_BLOCKER:{
+                return TOOLBAR_MENU_SOLO_START + 1;
+            }
             default:{
                 return UNKNOWN;
             }
@@ -371,6 +380,9 @@
         switch(obj){
             case EditorGUIFramework_WindowManagerObjectType.POPUP:{
                 return EditorGUIFramework_WindowManagerObjectType.POPUP_BLOCKER;
+            }
+            case EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO:{
+                return EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO_BLOCKER;
             }
             case EditorGUIFramework_WindowManagerObjectType.TOOLBAR:
             default:

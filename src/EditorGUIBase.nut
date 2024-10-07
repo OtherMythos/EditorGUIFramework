@@ -93,6 +93,37 @@
         return popup;
     }
 
+    ToolbarListener = class{
+        mCreator_ = null
+        mZOrderManager_ = null
+
+        constructor(creator, zOrderManager){
+            mCreator_ = creator;
+            mZOrderManager_ = zOrderManager;
+        }
+
+        function notifyToolbarDestroyed_(){
+            mZOrderManager_.releaseBlockerWindow();
+            mCreator_.mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_CLOSED);
+        }
+
+        function notifyToolbarClicked_(){
+            //mButtonHighlightPanel_.setVisible(false);
+        }
+    };
+
+    function createToolbarMenu(data, pos){
+        local obj = mObjectManager_.getObject();
+        local zOrderManager = mWindowManager_.mZOrderManager_;
+        local toolbar = ::EditorGUIFramework.Toolbar.ToolbarMenu(ToolbarListener(this, zOrderManager), data, zOrderManager, pos, false);
+
+        zOrderManager.generateBlockerWindowForObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO);
+
+        mBus_.transmitEvent(EditorGUIFramework_BusEvent.TOOLBAR_OPENED);
+
+        return toolbar;
+    }
+
     function serialiseWindowStates(outPath){
         _system.ensureUserDirectory();
 

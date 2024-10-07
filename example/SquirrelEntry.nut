@@ -11,6 +11,13 @@ function start(){
         print("redo");
     }
 
+    local firstFunction = function(){
+        print("first");
+    }
+    local secondFunction = function(){
+        print("second");
+    }
+
     ::guiFrameworkBase <- ::EditorGUIFramework.Base();
     ::guiFrameworkBase.setToolbar(::EditorGUIFramework.Toolbar([
         ["File", [
@@ -29,6 +36,8 @@ function start(){
         win.setPosition(_random.randInt(width), _random.randInt(height));
         win.setSize(100 + _random.randInt(50), 100 + _random.randInt(50));
     }
+
+    ::currentRightClickMenu <- null;
 
     local winSecond = guiFrameworkBase.createWindow(10000, "example window");
     winSecond.setPosition(150, 150);
@@ -88,6 +97,16 @@ function start(){
             guiFrameworkBase.createPopup(123, "test popup", constructionData);
         }, _GUI_ACTION_PRESSED, this);
         layout.addCell(createPopup);
+
+        local showRightClickMenu = exampleWin.createButton();
+        showRightClickMenu.setText("Show right click");
+        showRightClickMenu.attachListenerForEvent(function(widget, action){
+            ::currentRightClickMenu = guiFrameworkBase.createToolbarMenu([
+                ["first", firstFunction],
+                ["second", secondFunction],
+            ], Vec2(_input.getMouseX(), _input.getMouseY()));
+        }, _GUI_ACTION_PRESSED, this);
+        layout.addCell(showRightClickMenu);
 
         layout.layout();
     }

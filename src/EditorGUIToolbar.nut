@@ -147,8 +147,9 @@
     mHoverPanel_ = null;
     mCreator_ = null;
     mZOrderManager_ = null;
+    mOwnedByToolbar_ = false;
 
-    constructor(creator, data, zOrderManager, pos){
+    constructor(creator, data, zOrderManager, pos, ownedByToolbar=true){
         mCreator_ = creator;
         mEntries_ = array(data.len(), null);
         mWindow_ = _gui.createWindow();
@@ -157,6 +158,7 @@
         mHoverPanel_.setDatablock("EditorGUIFramework_FrameBg");
         mData_ = data;
         mZOrderManager_ = zOrderManager;
+        mOwnedByToolbar_ = ownedByToolbar;
 
         local posY = 0;
         print(_prettyPrint(data));
@@ -195,7 +197,11 @@
         local childSize = mWindow_.calculateChildrenSize();
         mWindow_.setSize(childSize.x * 1.5, childSize.y + 10);
         mWindow_.setPosition(pos);
-        mWindow_.setZOrder(mZOrderManager_.getZForWindowObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU, 0));
+        mWindow_.setZOrder(mZOrderManager_.getZForWindowObject(
+            mOwnedByToolbar_ ?
+            EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU :
+            EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO
+        , 0));
 
         for(local i = 0; i < mEntries_.len(); i++){
             local e = mEntries_[i];

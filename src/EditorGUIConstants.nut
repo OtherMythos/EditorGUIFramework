@@ -79,6 +79,8 @@ enum EditorGUIFramework_WindowManagerObjectType{
     TOOLBAR_MENU,
     POPUP_BLOCKER,
     POPUP,
+    TOOLBAR_MENU_SOLO,
+    TOOLBAR_MENU_SOLO_BLOCKER
 };
 
 enum EditorGUIFramework_WidgetCallbackEvent{
