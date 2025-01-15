@@ -3,6 +3,7 @@
     axisEntries_ = null;
     axisLayout_ = null;
     labelString_ = null;
+    numWidgets = 3;
 
     mVecListener_ = null;
 
@@ -12,7 +13,7 @@
         labelString_ = label;
 
         local listenerObj = ::EditorGUIFramework.Listener(axisCallback, this);
-        for(local i = 0; i < 3; i++){
+        for(local i = 0; i < numWidgets; i++){
             local axis = ::EditorGUIFramework.Widget.NumericInput(parent, true);
             axis.setValue(0);
             axis.attachParentListener(listenerObj);

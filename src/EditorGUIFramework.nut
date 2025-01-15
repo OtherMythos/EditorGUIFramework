@@ -29,3 +29,4 @@ _doFile("script://EditorGUIPopup.nut");
 
 _doFile("script://widgets/EditorGUIWidgetNumericInput.nut");
 _doFile("script://widgets/EditorGUIWidgetVector3Input.nut");
+_doFile("script://widgets/EditorGUIWidgetQuatInput.nut");
