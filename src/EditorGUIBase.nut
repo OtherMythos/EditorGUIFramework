@@ -115,7 +115,7 @@
     function createToolbarMenu(data, pos){
         local obj = mObjectManager_.getObject();
         local zOrderManager = mWindowManager_.mZOrderManager_;
-        local toolbar = ::EditorGUIFramework.Toolbar.ToolbarMenu(ToolbarListener(this, zOrderManager), data, zOrderManager, pos, false);
+        local toolbar = ::EditorGUIFramework.Toolbar.ToolbarMenu(ToolbarListener(this, zOrderManager), mBus_, data, zOrderManager, pos, false);
 
         zOrderManager.generateBlockerWindowForObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR_MENU_SOLO);
 

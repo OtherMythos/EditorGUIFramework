@@ -119,7 +119,7 @@
         local barItem = mBarItems_[idx];
         local pos = barItem.getPosition();
         pos.y += barItem.getSize().y;
-        mActiveToolbar_ = ToolbarMenu(this, mData_[idx][1], mZOrderManager_, pos);
+        mActiveToolbar_ = ToolbarMenu(this, mBus_, mData_[idx][1], mZOrderManager_, pos);
 
         mZOrderManager_.generateBlockerWindowForObject(EditorGUIFramework_WindowManagerObjectType.TOOLBAR);
 
@@ -143,14 +143,16 @@
 
     mWindow_ = null;
     mEntries_ = null;
+    mBus_ = null;
     mData_ = null;
     mHoverPanel_ = null;
     mCreator_ = null;
     mZOrderManager_ = null;
     mOwnedByToolbar_ = false;
 
-    constructor(creator, data, zOrderManager, pos, ownedByToolbar=true){
+    constructor(creator, bus, data, zOrderManager, pos, ownedByToolbar=true){
         mCreator_ = creator;
+        mBus_ = bus;
         mEntries_ = array(data.len(), null);
         mWindow_ = _gui.createWindow();
         mHoverPanel_ = mWindow_.createPanel();
@@ -207,6 +209,16 @@
             local e = mEntries_[i];
             e.setSize(mWindow_.getSize().x, e.getSize().y);
         }
+
+        if(!mOwnedByToolbar_){
+            mBus_.subscribeObject(this);
+        }
+    }
+
+    function notifyBusEvent(event, data){
+        if(event == EditorGUIFramework_BusEvent.INPUT_BLOCKER_CLICKED){
+            shutdown();
+        }
     }
 
     function notifyButtonPressed_(idx){
@@ -229,6 +241,9 @@
     function shutdown(){
         _gui.destroy(mWindow_);
         mCreator_.notifyToolbarDestroyed_();
+        if(!mOwnedByToolbar_){
+            mBus_.unsubscribeObject(this);
+        }
     }
 
 };
