@@ -24,6 +24,7 @@ _doFile("script://EditorGUIWindowManager.nut");
 _doFile("script://EditorGUIWindow.nut");
 _doFile("script://EditorGUIToolbar.nut");
 _doFile("script://EditorGUIPopup.nut");
+_doFile("script://EditorGUIInputStealer.nut");
 
 ::EditorGUIFramework.Widget <- {};
 

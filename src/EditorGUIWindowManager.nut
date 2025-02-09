@@ -312,6 +312,8 @@
 
     mBus_ = null;
 
+    mInputStealer_ = null;
+
     START = 5;
     UNKNOWN = 6;
     WINDOW_START = 10;
@@ -327,6 +329,8 @@
 
     constructor(bus){
         mBus_ = bus;
+
+        mInputStealer_ = ::EditorGUIFramework.InputStealer();
 
         WINDOW_END = WINDOW_START + ::EditorGUIFramework.WindowManager.MAX_WINDOWS;
         POST_WINDOW_START = WINDOW_END + POST_WINDOW_PADDING;
@@ -413,14 +417,17 @@
         local zIdx = getZForWindowObject(blockerType);
         mBlockerWindow_.setZOrder(zIdx);
 
-        _gui.reprocessMousePosition();
+        //_gui.reprocessMousePosition();
+        mInputStealer_.steal();
     }
 
     function releaseBlockerWindow(){
         assert(mBlockerWindow_ != null);
         _gui.destroy(mBlockerWindow_);
         mBlockerWindow_ = null;
-        _gui.reprocessMousePosition();
+        mInputStealer_.steal();
+        //_gui.reprocessMousePosition();
+
     }
 
 }
