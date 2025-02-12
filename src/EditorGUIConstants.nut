@@ -6,6 +6,7 @@ enum EditorGUIFramework_BusEvent{
     MOUSE_POS_CHANGE,
 
     WINDOW_MOVE_DRAG_BEGAN,
+    WINDOW_CLOSED,
 
     TOOLBAR_OPENED,
     TOOLBAR_CLOSED,

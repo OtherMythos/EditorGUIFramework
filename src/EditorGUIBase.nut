@@ -77,6 +77,10 @@
         mWindowManager_.attachWindowManagerListener(listener);
     }
 
+    function windowForIdExists(id){
+        return mWindowManager_.windowForIdExists(id);
+    }
+
     function createWindow(id, name){
         local obj = mObjectManager_.getObject();
         local window = ::EditorGUIFramework.Window(id, obj, mWindowManager_, name);

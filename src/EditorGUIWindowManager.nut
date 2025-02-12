@@ -100,14 +100,20 @@
         mStateMachine_.updateState();
     }
 
+    function windowForIdExists(id){
+        return mActiveWindowsById_.rawin(id);
+    }
+
     function registerWindow(id, window){
         if(mActiveWindows_.len() + 1 >= MAX_WINDOWS){
             throw "MAX_WINDOWS has been reached.";
         }
+        if(mActiveWindowsById_.rawin(id)){
+            throw format("Window with id %i already exists.", id);
+        }
         placeInitialZ_(window);
         //bringWindowToFront(window);
         mActiveWindows_.append(window);
-        assert(!mActiveWindowsById_.rawin(id));
         mActiveWindowsById_.rawset(id, window);
         if(mActiveWindows_.len() == 1){
             bringWindowToFront(window);
@@ -158,6 +164,17 @@
             if(i.pos != null) win.setPosition(i.pos);
             if(i.size != null) win.setSize(i.size);
         }
+
+        local closeWindows = [];
+        foreach(c,i in mActiveWindowsById_){
+            if(!data.rawin(c)){
+                closeWindows.append(c);
+            }
+        }
+
+        foreach(i in closeWindows){
+            closeWindow_(mActiveWindowsById_[i]);
+        }
     }
 
     function setMousePosition(pos){
@@ -170,6 +187,7 @@
         }
         mStateMachine_.notify(EditorGUIFramework_WindowManagerStateEvent.WINDOW_CLOSED, mStateContext_, window);
         deRegisterWindow(window);
+        mBus_.transmitEvent(EditorGUIFramework_BusEvent.WINDOW_CLOSED, window.getId());
     }
 
     function closePopup_(window){
