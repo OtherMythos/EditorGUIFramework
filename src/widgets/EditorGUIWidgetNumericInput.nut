@@ -53,7 +53,9 @@
         local value = widget.getText();
         local newlineLocation = value.find("\n");
         if(newlineLocation != null){
-            value = value.slice(0, newlineLocation);
+            //Remove just the \n
+            //In case of placing a number mid way through the entry and pressing enter, the full number needs to be taken
+            value = (value.slice(0, newlineLocation) + value.slice(newlineLocation+1));
             changed = true;
             enterPressed = true;
         }
