@@ -82,6 +82,10 @@
         mActiveToolbar_.shutdown();
     }
 
+    function getSize(){
+        return mWindow_.getSize();
+    }
+
     function notifyMenuItemPress_(idx){
         if(mActiveToolbar_ == null){
             triggerMenuForIdx_(idx);

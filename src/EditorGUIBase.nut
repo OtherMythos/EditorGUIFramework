@@ -46,6 +46,10 @@
         mWindowManager_.setToolbar(toolbar);
     }
 
+    function getToolbar(){
+        return mWindowManager_.getToolbar();
+    }
+
     function setMousePosition(x, y=null){
         local newPos = ::EditorGUIFramework.float2_(x, y);
         mBus_.transmitEvent(EditorGUIFramework_BusEvent.MOUSE_POS_CHANGE, newPos);

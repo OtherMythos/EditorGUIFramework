@@ -267,6 +267,10 @@
         mToolbar_.setup_(mBus_, mZOrderManager_);
     }
 
+    function getToolbar(){
+        return mToolbar_;
+    }
+
     function mouseInteracting(){
         if(!mStateMachine_.isState(EditorGUIFramework_WindowManagerState.NONE)) return true;
 
