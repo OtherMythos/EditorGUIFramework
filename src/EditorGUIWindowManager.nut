@@ -148,6 +148,7 @@
 
     function populateArrayWithWindowState_(array){
         foreach(c,i in mActiveWindowsById_){
+            if(!i.getSaveWindowState()) continue;
             local data = {
                 "id": c,
                 "pos": format("%f, %f", i.mPos_.x, i.mPos_.y),
@@ -161,6 +162,8 @@
         foreach(c,i in data){
             if(!mActiveWindowsById_.rawin(c)) continue;
             local win = mActiveWindowsById_[c];
+            if(!win.getSaveWindowState()) continue;
+
             if(i.pos != null) win.setPosition(i.pos);
             if(i.size != null) win.setSize(i.size);
         }
@@ -173,7 +176,9 @@
         }
 
         foreach(i in closeWindows){
-            closeWindow_(mActiveWindowsById_[i]);
+            local win = mActiveWindowsById_[i];
+            if(!win.getSaveWindowState()) continue;
+            closeWindow_(win);
         }
     }
 

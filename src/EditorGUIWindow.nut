@@ -18,61 +18,74 @@
     mWindowTitlePanel_ = null
     mChildWindow_ = null
     mResizeButton_ = null
+    mBorderless_ = false
+    mSaveWindowState_ = false
 
     RESIZE_BORDER = 8
 
-    constructor(id, obj, winMan, title){
+    constructor(id, obj, winMan, title, data=null){
         mId_ = id;
         mObj_ = obj;
         mWindowManager_ = winMan;
         mTitle_ = title;
 
-        setup();
+        if(data != null){
+            if(data.rawin("borderless")){
+                mBorderless_ = data.borderless;
+            }
+            if(data.rawin("saveWindowState")){
+                mSaveWindowState_ = data.saveWindowState;
+            }
+        }
+
+        setup(data);
         setSize(200, 200);
         setPosition(10, 10);
     }
 
-    function setup(){
+    function setup(data){
         local layoutLine = _gui.createLayoutLine();
         mWindow_ = _gui.createWindow();
         mWindow_.setVisualsEnabled(false);
 
-        mResizeButton_ = mWindow_.createButton();
-        mResizeButton_.attachListener(function(widget, action){
-            if(action == _GUI_ACTION_PRESSED){
-                mWindowManager_.requestResizeBegin_(this);
-            }
-            else if(action == _GUI_ACTION_HIGHLIGHTED){
-                mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_SIZEWE);
-            }
-            else if(action == _GUI_ACTION_CANCEL){
-                mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_ARROW);
-            }
-        }, this);
-        mResizeButton_.setVisualsEnabled(false);
+        if(!mBorderless_){
+            mResizeButton_ = mWindow_.createButton();
+            mResizeButton_.attachListener(function(widget, action){
+                if(action == _GUI_ACTION_PRESSED){
+                    mWindowManager_.requestResizeBegin_(this);
+                }
+                else if(action == _GUI_ACTION_HIGHLIGHTED){
+                    mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_SIZEWE);
+                }
+                else if(action == _GUI_ACTION_CANCEL){
+                    mObj_.transmitRequest(EditorGUIFramework_BusRequest.SET_CURSOR, _SYSTEM_CURSOR_ARROW);
+                }
+            }, this);
+            mResizeButton_.setVisualsEnabled(false);
 
-        mWindowTitlePanel_ = mWindow_.createPanel();
-        mWindowTitlePanel_.setPosition(0, 0);
-        mWindowTitlePanel_.setDatablock("EditorGUIFramework_FrameBg");
+            mWindowTitlePanel_ = mWindow_.createPanel();
+            mWindowTitlePanel_.setPosition(0, 0);
+            mWindowTitlePanel_.setDatablock("EditorGUIFramework_FrameBg");
 
-        mTitleLabel_ = mWindow_.createLabel();
-        layoutLine.addCell(mTitleLabel_);
+            mTitleLabel_ = mWindow_.createLabel();
+            layoutLine.addCell(mTitleLabel_);
 
-        mWindowCloseButton_ = mWindow_.createButton();
-        mWindowCloseButton_.setText("X");
-        mWindowCloseButton_.setSkinPack("EditorGUIFramework/WindowCloseButtonSkinPack");
-        mWindowCloseButton_.attachListenerForEvent(function(widget, action){
-            mWindowManager_.closeWindow_(this);
-        }, _GUI_ACTION_PRESSED, this);
-        //layoutLine.addCell(mWindowCloseButton_);
+            mWindowCloseButton_ = mWindow_.createButton();
+            mWindowCloseButton_.setText("X");
+            mWindowCloseButton_.setSkinPack("EditorGUIFramework/WindowCloseButtonSkinPack");
+            mWindowCloseButton_.attachListenerForEvent(function(widget, action){
+                mWindowManager_.closeWindow_(this);
+            }, _GUI_ACTION_PRESSED, this);
+            //layoutLine.addCell(mWindowCloseButton_);
 
-        mWindowMoveButton_ = mWindow_.createButton();
-        //mWindowMoveButton_.setText("move");
-        mWindowMoveButton_.attachListenerForEvent(function(widget, action){
-            mObj_.transmitEvent(EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN, this);
-        }, _GUI_ACTION_PRESSED, this);
-        mWindowMoveButton_.setVisualsEnabled(false);
-        //layoutLine.addCell(mWindowMoveButton_);
+            mWindowMoveButton_ = mWindow_.createButton();
+            //mWindowMoveButton_.setText("move");
+            mWindowMoveButton_.attachListenerForEvent(function(widget, action){
+                mObj_.transmitEvent(EditorGUIFramework_BusEvent.WINDOW_MOVE_DRAG_BEGAN, this);
+            }, _GUI_ACTION_PRESSED, this);
+            mWindowMoveButton_.setVisualsEnabled(false);
+            //layoutLine.addCell(mWindowMoveButton_);
+        }
 
         mChildWindow_ = mWindow_.createWindow();
 
@@ -98,7 +111,16 @@
         return EditorGUIFramework_WindowManagerObjectType.WINDOW;
     }
 
+    function getSaveWindowState(){
+        return mSaveWindowState_;
+    }
+
+    function setSaveWindowState(val){
+        mSaveWindowState_ = val;
+    }
+
     function setTitle(title){
+        if(mBorderless_) return;
         mTitle_ = title;
 
         mTitleLabel_.setText(mTitle_);
@@ -129,20 +151,26 @@
                 mSize_ = val;
                 mSizeWithBorders_ = val + RESIZE_BORDER*2;
                 mWindow_.setSize(mSizeWithBorders_);
-                mWindowCloseButton_.setText("X");
+                if(!mBorderless_){
+                    mWindowCloseButton_.setText("X");
 
-                mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
-                mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                    mWindowTitlePanel_.setSize(val.x, mTitleLabel_.getSize().y);
+                    mWindowTitlePanel_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
 
-                mTitleLabel_.setPosition(RESIZE_BORDER+5, RESIZE_BORDER);
-                mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x*2, mTitleLabel_.getSize().y);
-                mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);
-                mWindowMoveButton_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
-                mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
-                mChildWindow_.setPosition(RESIZE_BORDER, RESIZE_BORDER + mTitleLabel_.getSize().y);
-                mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y);
-                mResizeButton_.setPosition(0, 0);
-                mResizeButton_.setSize(mWindow_.getSize());
+                    mTitleLabel_.setPosition(RESIZE_BORDER+5, RESIZE_BORDER);
+                    mWindowCloseButton_.setSize(mWindowCloseButton_.getSize().x*2, mTitleLabel_.getSize().y);
+                    mWindowCloseButton_.setPosition(RESIZE_BORDER + val.x - mWindowCloseButton_.getSize().x, RESIZE_BORDER);
+                    mWindowMoveButton_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                    mWindowMoveButton_.setSize(val.x - mWindowCloseButton_.getSize().x, mTitleLabel_.getSize().y);
+                    mChildWindow_.setPosition(RESIZE_BORDER, RESIZE_BORDER + mTitleLabel_.getSize().y);
+                    mChildWindow_.setSize(val.x, val.y - mTitleLabel_.getSize().y);
+                    mResizeButton_.setPosition(0, 0);
+                    mResizeButton_.setSize(mWindow_.getSize());
+
+                }else{
+                    mChildWindow_.setPosition(RESIZE_BORDER, RESIZE_BORDER);
+                    mChildWindow_.setSize(val.x, val.y);
+                }
 
                 break;
             }
@@ -153,7 +181,9 @@
             }
             case EditorGUIFramework_WindowParam.FOCUS:{
                 mFocused_ = val;
-                mWindowTitlePanel_.setDatablock(mFocused_ ? "EditorGUIFramework_FrameBgActive" : "EditorGUIFramework_FrameBg");
+                if(!mBorderless_){
+                    mWindowTitlePanel_.setDatablock(mFocused_ ? "EditorGUIFramework_FrameBgActive" : "EditorGUIFramework_FrameBg");
+                }
                 break;
             }
         }

@@ -85,9 +85,10 @@
         return mWindowManager_.windowForIdExists(id);
     }
 
-    function createWindow(id, name){
+    function createWindow(id, name, data=null){
         local obj = mObjectManager_.getObject();
-        local window = ::EditorGUIFramework.Window(id, obj, mWindowManager_, name);
+        local window = ::EditorGUIFramework.Window(id, obj, mWindowManager_, name, data);
+        window.mSaveWindowState_ = true;
         mWindowManager_.registerWindow(id, window);
 
         return window;
