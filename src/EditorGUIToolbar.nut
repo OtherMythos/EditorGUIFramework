@@ -227,11 +227,11 @@
 
     function notifyButtonPressed_(idx){
         local targetFunc = mData_[idx][1];
+        mCreator_.notifyToolbarClicked_();
+        shutdown();
         if(targetFunc != null){
             targetFunc();
         }
-        mCreator_.notifyToolbarClicked_();
-        shutdown();
     }
 
     function notifyButtonHoverChange_(idx, hovered){

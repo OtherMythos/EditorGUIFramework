@@ -94,9 +94,14 @@
         return window;
     }
 
-    function createPopup(id, name, constructionData=null){
+    function createPopup(id, name, constructionData=null, callbackFunction=null){
         local obj = mObjectManager_.getObject();
-        local popup = ::EditorGUIFramework.Popup(id, obj, mWindowManager_, name, constructionData);
+        local popup = null;
+        if(constructionData != null){
+            popup = ::EditorGUIFramework.PopupWithBasicData(id, obj, mWindowManager_, name, constructionData, callbackFunction);
+        }else{
+            popup = ::EditorGUIFramework.Popup(id, obj, mWindowManager_, name);
+        }
         mWindowManager_.registerPopup(id, popup);
 
         return popup;

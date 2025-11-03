@@ -1,6 +1,6 @@
 ::EditorGUIFramework.Popup <- class extends ::EditorGUIFramework.Window{
 
-    constructor(id, obj, winMan, title, constructionData){
+    constructor(id, obj, winMan, title){
         base.constructor(id, obj, winMan, title);
 
         setSize(500, 200);
@@ -8,9 +8,6 @@
         mWindowCloseButton_.attachListenerForEvent(function(widget, action){
             closePopup();
         }, _GUI_ACTION_PRESSED, this);
-        if(constructionData != null){
-            constructWithBasicData_(constructionData);
-        }
     }
 
     function centrePopup(){
@@ -26,32 +23,67 @@
         mWindowManager_.closePopup_(this);
     }
 
+};
+
+::EditorGUIFramework.PopupWithBasicData <- class extends ::EditorGUIFramework.Popup{
+
+    mCallbackFunction_ = null;
+
+    mInputText_ = null;
+
+    function constructor(id, obj, winMan, title, constructionData, callbackFunction){
+        base.constructor(id, obj, winMan, title);
+
+        mCallbackFunction_ = callbackFunction;
+        constructWithBasicData_(constructionData);
+    }
+
+    function closeButtonCallback(widget, action){
+        if(mCallbackFunction_ != null){
+            mCallbackFunction_(this, EditorGUIFramework_PopupConstructionData.CLOSE_BUTTON);
+        }
+        closePopup();
+    }
+
+    function acceptButtonCallback(widget, action){
+        if(mCallbackFunction_ != null){
+            mCallbackFunction_(this, EditorGUIFramework_PopupConstructionData.ACCEPT_BUTTON);
+        }
+        closePopup();
+    }
+
     function constructWithBasicData_(constructionData){
         local win = getWin();
 
+        local descriptionLabel = null;
         local closeButton = null;
         local acceptButton = null;
+        local inputText = null;
         foreach(i in constructionData){
             switch(i[0]){
                 case EditorGUIFramework_PopupConstructionData.DESCRIPTION:{
                     local label = win.createLabel();
                     label.setText(i[1]);
+                    descriptionLabel = label;
+                    break;
+                }
+                case EditorGUIFramework_PopupConstructionData.INPUT_TEXT:{
+                    local editbox = win.createEditbox();
+                    editbox.setMinSize(400, 100);
+                    inputText = editbox;
+                    mInputText_ = inputText;
                     break;
                 }
                 case EditorGUIFramework_PopupConstructionData.CLOSE_BUTTON:{
                     closeButton = win.createButton();
                     closeButton.setText(i[1]);
-                    closeButton.attachListenerForEvent(function(widget, action){
-                        closePopup();
-                    }, _GUI_ACTION_PRESSED, this);
+                    closeButton.attachListenerForEvent(closeButtonCallback, _GUI_ACTION_PRESSED, this);
                     break;
                 }
                 case EditorGUIFramework_PopupConstructionData.ACCEPT_BUTTON:{
                     acceptButton = win.createButton();
                     acceptButton.setText(i[1]);
-                    acceptButton.attachListenerForEvent(function(widget, action){
-                        closePopup();
-                    }, _GUI_ACTION_PRESSED, this);
+                    acceptButton.attachListenerForEvent(acceptButtonCallback, _GUI_ACTION_PRESSED, this);
                     break;
                 }
             }
@@ -59,6 +91,14 @@
         local layoutLine = _gui.createLayoutLine(_LAYOUT_HORIZONTAL);
         local maxSize = 0;
         local width = 0;
+        if(inputText != null){
+            inputText.setSize(400, 40);
+            local targetPos = Vec2();
+            if(descriptionLabel != null){
+                targetPos.y += descriptionLabel.getSize().y;
+            }
+            inputText.setPosition(targetPos);
+        }
         if(closeButton != null){
             local s = closeButton.getSize();
             local height = s.y;
@@ -87,5 +127,4 @@
         layoutLine.layout();
 
     }
-
-};
+}

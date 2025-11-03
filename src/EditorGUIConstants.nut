@@ -91,5 +91,6 @@ enum EditorGUIFramework_WidgetCallbackEvent{
 enum EditorGUIFramework_PopupConstructionData{
     DESCRIPTION,
     CLOSE_BUTTON,
-    ACCEPT_BUTTON
+    ACCEPT_BUTTON,
+    INPUT_TEXT,
 };
